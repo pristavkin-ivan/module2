@@ -1,0 +1,8 @@
+com/epam/esm/gift_certificate/config/ContextConfig.java
+ com.epam.esm.gift_certificate.config.ContextConfig
+com/epam/esm/gift_certificate/controller/GiftCertificateController.java
+ com.epam.esm.gift_certificate.controller.GiftCertificateController
+com/epam/esm/gift_certificate/config/DispatcherServletConfig.java
+ com.epam.esm.gift_certificate.config.DispatcherServletConfig
+com/epam/esm/gift_certificate/controller/TagController.java
+ com.epam.esm.gift_certificate.controller.TagController
