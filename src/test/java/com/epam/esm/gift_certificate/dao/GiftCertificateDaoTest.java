@@ -1,6 +1,7 @@
 package com.epam.esm.gift_certificate.dao;
 
 import com.epam.esm.gift_certificate.config.TestContextConfig;
+import com.epam.esm.gift_certificate.dao.impl.GiftCertificateDao;
 import com.epam.esm.gift_certificate.entity.GiftCertificate;;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;

@@ -13,12 +13,20 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 
 import javax.sql.DataSource;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.TimeZone;
 
 @Configuration
 @ComponentScan("com")
 @EnableWebMvc
 @PropertySource("classpath:db.properties")
 public class ContextConfig implements WebMvcConfigurer {
+
+    private final static String UTC_ZONE = "UTC";
 
     @Bean
     public HikariConfig hikariConfig() {

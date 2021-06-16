@@ -1,7 +1,7 @@
 package com.epam.esm.gift_certificate.controller;
 
 import com.epam.esm.gift_certificate.entity.GiftCertificate;
-import com.epam.esm.gift_certificate.service.GiftCertificateService;
+import com.epam.esm.gift_certificate.service.api.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -49,7 +49,7 @@ public class GiftCertificateController {
     }
 
     @PutMapping( "/{id}")
-    @ResponseStatus
+    @ResponseStatus(HttpStatus.OK)
     public void updateNameOfGiftCertificate(@PathVariable("id") int id, @RequestBody GiftCertificate giftCertificate) {
         giftCertificateService.updateGiftCertificate(id, giftCertificate);
     }

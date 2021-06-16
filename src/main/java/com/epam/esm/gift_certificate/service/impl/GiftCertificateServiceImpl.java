@@ -1,7 +1,10 @@
-package com.epam.esm.gift_certificate.service;
+package com.epam.esm.gift_certificate.service.impl;
 
-import com.epam.esm.gift_certificate.dao.GiftCertificateDao;
+import com.epam.esm.gift_certificate.dao.api.Dao;
+import com.epam.esm.gift_certificate.dao.impl.GiftCertificateDao;
 import com.epam.esm.gift_certificate.entity.GiftCertificate;
+import com.epam.esm.gift_certificate.service.api.GiftCertificateService;
+import com.epam.esm.gift_certificate.util.IsoDateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -9,12 +12,12 @@ import java.util.List;
 
 //todo transaction manager
 @Component
-public class GiftCertificateServiceImpl implements GiftCertificateService {
+public final class GiftCertificateServiceImpl implements GiftCertificateService {
 
-    private final GiftCertificateDao giftCertificateDao;
+    private final Dao<GiftCertificate> giftCertificateDao;
 
     @Autowired
-    public GiftCertificateServiceImpl(GiftCertificateDao giftCertificateDao) {
+    public GiftCertificateServiceImpl(Dao<GiftCertificate> giftCertificateDao) {
         this.giftCertificateDao = giftCertificateDao;
     }
 
@@ -31,11 +34,18 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public void createGiftCertificate(GiftCertificate giftCertificate) {
+        final String time = IsoDateUtil.getCurrentTimeInIsoFormat();
+
+        giftCertificate.setCreateDate(time);
+        giftCertificate.setLastUpdateDate(time);
         giftCertificateDao.create(giftCertificate);
     }
 
     @Override
     public void updateGiftCertificate(int id, GiftCertificate giftCertificate) {
+        final String time = IsoDateUtil.getCurrentTimeInIsoFormat();
+
+        giftCertificate.setLastUpdateDate(time);
         giftCertificateDao.update(id, giftCertificate);
     }
 

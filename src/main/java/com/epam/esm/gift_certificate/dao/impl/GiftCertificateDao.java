@@ -1,5 +1,8 @@
-package com.epam.esm.gift_certificate.dao;
+package com.epam.esm.gift_certificate.dao.impl;
 
+import com.epam.esm.gift_certificate.dao.api.Dao;
+import com.epam.esm.gift_certificate.dao.api.SqlLabels;
+import com.epam.esm.gift_certificate.dao.api.SqlQueries;
 import com.epam.esm.gift_certificate.entity.GiftCertificate;
 
 import org.apache.logging.log4j.LogManager;
@@ -49,12 +52,13 @@ public class GiftCertificateDao implements Dao<GiftCertificate> {
 
     @Override
     public void update(int id, GiftCertificate giftCertificate) {
-       jdbcOperations.update(SqlQueries.UPDATE_NAME, giftCertificate.getName(), id);
+        //todo никогда не апдейтить create_date
+       jdbcOperations.update(SqlQueries.UPDATE_NAME, giftCertificate.getName(), giftCertificate.getLastUpdateDate(), id);
     }
 
     @Override
-    public void delete(int index) {
-        jdbcOperations.update(SqlQueries.DELETE_GIFT_CERTIFICATE, index);
+    public void delete(int id) {
+        jdbcOperations.update(SqlQueries.DELETE_GIFT_CERTIFICATE, id);
     }
 
     @Override
@@ -71,13 +75,13 @@ public class GiftCertificateDao implements Dao<GiftCertificate> {
 
     private GiftCertificate mapGiftCertificate(ResultSet resultSet, int row) throws SQLException {
         return new GiftCertificate(
-                resultSet.getInt(SqlQueries.ID_LABEL)
-                , resultSet.getString(SqlQueries.NAME_LABEL)
-                , resultSet.getString(SqlQueries.DESCRIPTION_LABEL)
-                , resultSet.getDouble(SqlQueries.PRICE_LABEL)
-                , resultSet.getInt(SqlQueries.DURATION_LABEL)
-                , resultSet.getString(SqlQueries.CREATE_DATE_LABEL)
-                , resultSet.getString(SqlQueries.LAST_UPDATE_DATE_LABEL));
+                resultSet.getInt(SqlLabels.G_ID)
+                , resultSet.getString(SqlLabels.G_NAME)
+                , resultSet.getString(SqlLabels.G_DESCRIPTION)
+                , resultSet.getDouble(SqlLabels.G_PRICE)
+                , resultSet.getInt(SqlLabels.G_DURATION)
+                , resultSet.getString(SqlLabels.G_CREATE_DATE)
+                , resultSet.getString(SqlLabels.G_LAST_UPDATE_DATE));
     }
 
 

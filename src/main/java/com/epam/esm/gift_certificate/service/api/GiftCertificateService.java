@@ -1,4 +1,4 @@
-package com.epam.esm.gift_certificate.service;
+package com.epam.esm.gift_certificate.service.api;
 
 import com.epam.esm.gift_certificate.entity.GiftCertificate;
 

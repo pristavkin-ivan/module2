@@ -42,26 +42,6 @@ public final class GiftCertificate implements Entity {
         return name;
     }
 
-    public Integer getDuration() {
-        return duration;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public String getCreateDate() {
-        return createDate;
-    }
-
-    public String getLastUpdateDate() {
-        return lastUpdateDate;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -89,5 +69,33 @@ public final class GiftCertificate implements Entity {
                 ", createDate='" + createDate + '\'' +
                 ", lastUpdateDate='" + lastUpdateDate + '\'' +
                 '}';
+    }
+
+    public Integer getDuration() {
+        return duration;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public String getCreateDate() {
+        return createDate;
+    }
+
+    public String getLastUpdateDate() {
+        return lastUpdateDate;
+    }
+
+    public void setCreateDate(String createDate) {
+        this.createDate = createDate;
+    }
+
+    public void setLastUpdateDate(String lastUpdateDate) {
+        this.lastUpdateDate = lastUpdateDate;
     }
 }
