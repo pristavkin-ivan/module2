@@ -1,7 +1,7 @@
 package com.epam.esm.gift_certificate.dao;
 
 import com.epam.esm.gift_certificate.config.TestContextConfig;
-import com.epam.esm.gift_certificate.dao.impl.GiftCertificateDao;
+import com.epam.esm.gift_certificate.dao.impl.GiftCertificateDaoImpl;
 import com.epam.esm.gift_certificate.entity.GiftCertificate;;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -12,12 +12,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Properties;
 
 @ContextConfiguration(classes = {TestContextConfig.class})
 @RunWith(SpringJUnit4ClassRunner.class)
-public class GiftCertificateDaoTest {
+public class GiftCertificateDaoImplTest {
 
     private static GiftCertificate giftCertificate;
 
@@ -25,7 +26,7 @@ public class GiftCertificateDaoTest {
     private ApplicationContext applicationContext;
 
     @Autowired
-    GiftCertificateDao dao;
+    GiftCertificateDaoImpl dao;
 
     /*private static DataSource dataSource;
     private static final String PATH_TO_PROP = "src/test/resources/db.properties";
@@ -38,7 +39,7 @@ public class GiftCertificateDaoTest {
         final Properties properties = new Properties();
 
         giftCertificate = new GiftCertificate(0, "vasya", "asdasdasd fasf", 44.5, 10
-                , "12.06.2021 17:07", "12.06.2021 15:07");
+                , "12.06.2021 17:07", "12.06.2021 15:07", new ArrayList<>());
 
         /*try {
             properties.load(new FileInputStream(PATH_TO_PROP));
