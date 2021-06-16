@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface GiftCertificateService {
     List<GiftCertificate> readAllGiftCertificates();
+    List<GiftCertificate> readAllGiftCertificates(String tag);
     GiftCertificate readGiftCertificate(int id);
     void createGiftCertificate(GiftCertificate giftCertificate);
     void updateGiftCertificate(int id, GiftCertificate giftCertificate);

@@ -40,6 +40,13 @@ public class GiftCertificateController {
         return giftCertificateService.readGiftCertificate(id);
     }
 
+    @GetMapping("/tag/{tag}")
+    @ResponseBody
+    public List<GiftCertificate> getAllGiftCertificates(@PathVariable("tag") String tag) {
+        return giftCertificateService.readAllGiftCertificates(tag);
+    }
+
+
     @PostMapping
     @ResponseBody
     public GiftCertificate addGiftCertificate(@RequestBody GiftCertificate giftCertificate) {

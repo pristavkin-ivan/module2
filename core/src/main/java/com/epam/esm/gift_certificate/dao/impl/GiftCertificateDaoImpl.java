@@ -1,6 +1,6 @@
 package com.epam.esm.gift_certificate.dao.impl;
 
-import com.epam.esm.gift_certificate.dao.api.Dao;
+import com.epam.esm.gift_certificate.dao.api.GiftCertificateDao;
 import com.epam.esm.gift_certificate.dao.api.SqlLabels;
 import com.epam.esm.gift_certificate.dao.api.SqlQueries;
 import com.epam.esm.gift_certificate.entity.GiftCertificate;
@@ -8,25 +8,29 @@ import com.epam.esm.gift_certificate.entity.GiftCertificate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.stereotype.Repository;
 
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class GiftCertificateDao implements Dao<GiftCertificate> {
+public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificate> {
 
     private final JdbcOperations jdbcOperations;
 
-    private final static Logger LOGGER = LogManager.getLogger(GiftCertificateDao.class);
+    private final static Logger LOGGER = LogManager.getLogger(GiftCertificateDaoImpl.class);
+
+    private final static String NO_SUCH_CERTIFICATE = "No such gift-certificate";
 
     @Autowired
-    public GiftCertificateDao(JdbcOperations jdbcOperations) {
+    public GiftCertificateDaoImpl(JdbcOperations jdbcOperations) {
         this.jdbcOperations = jdbcOperations;
     }
 
@@ -43,11 +47,38 @@ public class GiftCertificateDao implements Dao<GiftCertificate> {
     }
 
     @Override
+    public List<GiftCertificate> getAll(String tag) {
+        final List<GiftCertificate> giftCertificates = jdbcOperations
+                .query(SqlQueries.SELECT_ALL_GIFT_CERTIFICATES_BY_TAG, this::mapGiftCertificate, tag);
+
+        if (giftCertificates.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return giftCertificates;
+    }
+
+    @Override
+    public GiftCertificate getLastRow() {
+        return jdbcOperations.queryForObject(
+                SqlQueries.SELECT_LAST_INSERT_CERTIFICATE
+                , this::mapGiftCertificate);
+    }
+
+    @Override
     public Optional<GiftCertificate> get(int id) {
-        return Optional.ofNullable(jdbcOperations.queryForObject(
-                SqlQueries.SELECT_GIFT_CERTIFICATE_BY_INDEX
-                , this::mapGiftCertificate
-                , id));
+        GiftCertificate giftCertificate = null;
+
+        try {
+            giftCertificate = jdbcOperations.queryForObject(
+                    SqlQueries.SELECT_GIFT_CERTIFICATE_BY_ID
+                    , this::mapGiftCertificate
+                    , id);
+        } catch (IncorrectResultSizeDataAccessException exception) {
+            //todo редирект на страницу ошибки с кастомным exception
+            LOGGER.info(NO_SUCH_CERTIFICATE);
+        }
+        return Optional.ofNullable(giftCertificate);
     }
 
     @Override
@@ -81,7 +112,8 @@ public class GiftCertificateDao implements Dao<GiftCertificate> {
                 , resultSet.getDouble(SqlLabels.G_PRICE)
                 , resultSet.getInt(SqlLabels.G_DURATION)
                 , resultSet.getString(SqlLabels.G_CREATE_DATE)
-                , resultSet.getString(SqlLabels.G_LAST_UPDATE_DATE));
+                , resultSet.getString(SqlLabels.G_LAST_UPDATE_DATE)
+                , new ArrayList<>());
     }
 
 

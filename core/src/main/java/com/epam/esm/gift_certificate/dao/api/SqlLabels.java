@@ -20,4 +20,6 @@ public interface SqlLabels {
 
     String T_ID = "t_id";
     String T_NAME = "t_name";
+    String TAG_ID = "tag_id";
+
 }
