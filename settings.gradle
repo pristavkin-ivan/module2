@@ -1,4 +1,4 @@
 rootProject.name = 'module2'
-include 'controller'
-include 'service'
+include 'core'
+include 'gift-certificate-web-service'
 

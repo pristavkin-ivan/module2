@@ -8,3 +8,5 @@
 /.idea/
 gradlew
 gradlew.bat
+core/src/main/resources/
+gift-certificate-web-service/src/main/resources/
