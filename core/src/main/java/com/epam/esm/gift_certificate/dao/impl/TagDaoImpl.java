@@ -63,12 +63,13 @@ public final class TagDaoImpl implements TagDao<Tag> {
     }
 
     @Override
-    public void create(Tag tag) {
+    public Optional<Tag> create(Tag tag) {
         try {
             jdbcOperations.update(SqlQueries.INSERT_TAG, tag.getName());
         } catch (DataAccessException exception) {
             LOGGER.info(SUCH_TAG_EXISTS);
         }
+        return getTagByName(tag.getName());
     }
 
     @Override

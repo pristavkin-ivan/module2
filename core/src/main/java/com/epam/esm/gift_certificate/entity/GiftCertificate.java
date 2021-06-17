@@ -76,6 +76,10 @@ public final class GiftCertificate implements Entity {
                 '}';
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public Integer getDuration() {
         return duration;
     }

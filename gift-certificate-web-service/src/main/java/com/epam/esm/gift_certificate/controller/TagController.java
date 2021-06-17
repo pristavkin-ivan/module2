@@ -42,9 +42,7 @@ public class TagController {
     @PostMapping()
     @ResponseBody
     public Tag createTag(@RequestBody Tag tag) {
-        tagService.create(tag);
-        //todo вернуть id
-        return new Tag();
+        return tagService.create(tag);
     }
 
     @DeleteMapping ("/{id}")

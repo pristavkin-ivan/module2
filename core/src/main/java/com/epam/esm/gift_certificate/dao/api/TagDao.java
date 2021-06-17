@@ -13,7 +13,7 @@ public interface TagDao<T extends Entity> {
 
     void delete(int id);
 
-    void create(T entity);
+    Optional<T> create(T entity);
 
     Optional<Tag> getTagByName(String name);
 

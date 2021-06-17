@@ -8,5 +8,5 @@ public interface TagService {
     List<Tag> readAll();
     Tag read(int id);
     void delete(int id);
-    void create(Tag tag);
+    Tag create(Tag tag);
 }
