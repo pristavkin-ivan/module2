@@ -65,7 +65,7 @@ public final class GiftCertificateServiceImpl implements GiftCertificateService 
     }
 
     @Override
-    public void createGiftCertificate(GiftCertificate giftCertificate) {
+    public GiftCertificate createGiftCertificate(GiftCertificate giftCertificate) {
         final String time = IsoDateUtil.getCurrentTimeInIsoFormat();
         final List<Tag> tags = giftCertificate.getTags();
 
@@ -76,14 +76,24 @@ public final class GiftCertificateServiceImpl implements GiftCertificateService 
         if (tags != null) {
             populateTags(giftCertificateDao.getLastRow(), tags);
         }
+
+        return giftCertificateDao.getLastRow();
     }
 
     @Override
-    public void updateGiftCertificate(int id, GiftCertificate giftCertificate) {
+    public GiftCertificate updateGiftCertificate(int id, GiftCertificate giftCertificate) {
         final String time = IsoDateUtil.getCurrentTimeInIsoFormat();
+        final List<Tag> tags = giftCertificate.getTags();
 
         giftCertificate.setLastUpdateDate(time);
         giftCertificateDao.update(id, giftCertificate);
+        giftCertificate.setId(id);
+
+        if (tags != null) {
+            populateTags(giftCertificate, tags);
+        }
+
+        return giftCertificateDao.get(id).orElse(giftCertificate);
     }
 
     @Override
@@ -101,7 +111,7 @@ public final class GiftCertificateServiceImpl implements GiftCertificateService 
                 tag_id = tagDao.getTagByName(tag.getName()).orElse(tag).getId();
             }
 
-            if (!giftsTagsDao.isAssociationExists(tag_id)) {
+            if (!giftsTagsDao.isAssociationExists(giftCertificate.getId(), tag_id)) {
 
                 giftsTagsDao.createAssociation(giftCertificate.getId(), tag_id);
             }

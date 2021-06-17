@@ -8,7 +8,7 @@ public interface GiftCertificateService {
     List<GiftCertificate> readAllGiftCertificates();
     List<GiftCertificate> readAllGiftCertificates(String tag);
     GiftCertificate readGiftCertificate(int id);
-    void createGiftCertificate(GiftCertificate giftCertificate);
-    void updateGiftCertificate(int id, GiftCertificate giftCertificate);
+    GiftCertificate createGiftCertificate(GiftCertificate giftCertificate);
+    GiftCertificate updateGiftCertificate(int id, GiftCertificate giftCertificate);
     void deleteGiftCertificate(int id);
 }

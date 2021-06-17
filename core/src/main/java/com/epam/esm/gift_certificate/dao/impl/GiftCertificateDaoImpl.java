@@ -83,8 +83,8 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificat
 
     @Override
     public void update(int id, GiftCertificate giftCertificate) {
-        //todo никогда не апдейтить create_date
-       jdbcOperations.update(SqlQueries.UPDATE_NAME, giftCertificate.getName(), giftCertificate.getLastUpdateDate(), id);
+        updateLogic(id, giftCertificate);
+        jdbcOperations.update(SqlQueries.UPDATE_DATE, giftCertificate.getLastUpdateDate(), id);
     }
 
     @Override
@@ -116,5 +116,22 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificat
                 , new ArrayList<>());
     }
 
+    private void updateLogic(int id, GiftCertificate giftCertificate) {
+        if (giftCertificate.getName() != null) {
+            jdbcOperations.update(SqlQueries.UPDATE_NAME, giftCertificate.getName(), id);
+        }
+
+        if (giftCertificate.getDescription() != null) {
+            jdbcOperations.update(SqlQueries.UPDATE_DESCRIPTION, giftCertificate.getDescription(), id);
+        }
+
+        if (giftCertificate.getPrice() != null) {
+            jdbcOperations.update(SqlQueries.UPDATE_PRICE, giftCertificate.getPrice(), id);
+        }
+
+        if (giftCertificate.getDuration() != null) {
+            jdbcOperations.update(SqlQueries.UPDATE_DURATION, giftCertificate.getDuration(), id);
+        }
+    }
 
 }

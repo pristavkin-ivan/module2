@@ -46,19 +46,17 @@ public class GiftCertificateController {
         return giftCertificateService.readAllGiftCertificates(tag);
     }
 
-
     @PostMapping
     @ResponseBody
     public GiftCertificate addGiftCertificate(@RequestBody GiftCertificate giftCertificate) {
-        giftCertificateService.createGiftCertificate(giftCertificate);
-        //todo вернуть id
-        return giftCertificate;
+        return giftCertificateService.createGiftCertificate(giftCertificate);
     }
 
     @PutMapping( "/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public void updateNameOfGiftCertificate(@PathVariable("id") int id, @RequestBody GiftCertificate giftCertificate) {
-        giftCertificateService.updateGiftCertificate(id, giftCertificate);
+    @ResponseBody
+    public GiftCertificate updateNameOfGiftCertificate(@PathVariable("id") int id
+            , @RequestBody GiftCertificate giftCertificate) {
+        return giftCertificateService.updateGiftCertificate(id, giftCertificate);
     }
 
     @DeleteMapping( "/{id}")
