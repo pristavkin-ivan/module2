@@ -1,13 +1,12 @@
 package com.epam.esm.gift_certificate.dao.impl;
 
 import com.epam.esm.gift_certificate.dao.api.GiftCertificateDao;
-import com.epam.esm.gift_certificate.dao.api.SqlLabels;
-import com.epam.esm.gift_certificate.dao.api.SqlQueries;
 import com.epam.esm.gift_certificate.entity.GiftCertificate;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.stereotype.Repository;
@@ -20,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+//todo бросать кастомные exception, обработать в Exception handler controller
 @Repository
 public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificate> {
 
@@ -59,10 +59,15 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificat
     }
 
     @Override
-    public GiftCertificate getLastRow() {
-        return jdbcOperations.queryForObject(
-                SqlQueries.SELECT_LAST_INSERT_CERTIFICATE
-                , this::mapGiftCertificate);
+    public Optional<GiftCertificate> getLastRow() {
+        try {
+            return Optional.ofNullable(jdbcOperations.queryForObject(
+                    SqlQueries.SELECT_LAST_INSERT_CERTIFICATE
+                    , this::mapGiftCertificate));
+        } catch (EmptyResultDataAccessException exception) {
+            LOGGER.info(exception);
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -75,16 +80,22 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificat
                     , this::mapGiftCertificate
                     , id);
         } catch (IncorrectResultSizeDataAccessException exception) {
-            //todo редирект на страницу ошибки с кастомным exception
             LOGGER.info(NO_SUCH_CERTIFICATE);
         }
         return Optional.ofNullable(giftCertificate);
     }
 
+    @SuppressWarnings("all")
     @Override
-    public void update(int id, GiftCertificate giftCertificate) {
-        updateLogic(id, giftCertificate);
-        jdbcOperations.update(SqlQueries.UPDATE_DATE, giftCertificate.getLastUpdateDate(), id);
+    public void update(GiftCertificate giftCertificate) {
+        GiftCertificate modifyingGiftCertificate = get(giftCertificate.getId()).get();
+
+        updateLogic(modifyingGiftCertificate, giftCertificate);
+
+        jdbcOperations.update(SqlQueries.UPDATE_GIFT_CERTIFICATE, modifyingGiftCertificate.getName()
+                , modifyingGiftCertificate.getDescription(), modifyingGiftCertificate.getPrice()
+                , modifyingGiftCertificate.getDuration(), modifyingGiftCertificate.getLastUpdateDate()
+                , modifyingGiftCertificate.getId());
     }
 
     @Override
@@ -116,22 +127,24 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificat
                 , new ArrayList<>());
     }
 
-    private void updateLogic(int id, GiftCertificate giftCertificate) {
+    private void updateLogic(GiftCertificate modifyingGiftCertificate, GiftCertificate giftCertificate) {
         if (giftCertificate.getName() != null) {
-            jdbcOperations.update(SqlQueries.UPDATE_NAME, giftCertificate.getName(), id);
+            modifyingGiftCertificate.setName(giftCertificate.getName());
         }
 
         if (giftCertificate.getDescription() != null) {
-            jdbcOperations.update(SqlQueries.UPDATE_DESCRIPTION, giftCertificate.getDescription(), id);
+            modifyingGiftCertificate.setDescription(giftCertificate.getDescription());
         }
 
         if (giftCertificate.getPrice() != null) {
-            jdbcOperations.update(SqlQueries.UPDATE_PRICE, giftCertificate.getPrice(), id);
+            modifyingGiftCertificate.setPrice(giftCertificate.getPrice());
         }
 
         if (giftCertificate.getDuration() != null) {
-            jdbcOperations.update(SqlQueries.UPDATE_DURATION, giftCertificate.getDuration(), id);
+            modifyingGiftCertificate.setDuration(giftCertificate.getDuration());
         }
+
+        modifyingGiftCertificate.setLastUpdateDate(giftCertificate.getLastUpdateDate());
     }
 
 }

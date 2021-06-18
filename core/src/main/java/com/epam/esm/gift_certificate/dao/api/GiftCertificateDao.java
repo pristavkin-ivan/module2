@@ -16,17 +16,9 @@ public interface GiftCertificateDao<T extends Entity> {
 
     void create(T entity);
 
-    void update(int id, T entity);
+    void update(T entity);
 
     List<T> getAll(String tag);
 
-    default Optional<Tag> getTagByName(String name) {
-        return Optional.empty();
-    }
-
-    default List<T> getTagList(int id) {
-        return Collections.emptyList();
-    }
-
-    T getLastRow();
+    Optional<T> getLastRow();
 }

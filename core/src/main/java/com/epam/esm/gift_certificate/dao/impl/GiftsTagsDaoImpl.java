@@ -1,8 +1,6 @@
 package com.epam.esm.gift_certificate.dao.impl;
 
 import com.epam.esm.gift_certificate.dao.api.GiftsTagsDao;
-import com.epam.esm.gift_certificate.dao.api.SqlLabels;
-import com.epam.esm.gift_certificate.dao.api.SqlQueries;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
@@ -37,8 +35,8 @@ public class GiftsTagsDaoImpl implements GiftsTagsDao {
     }
 
     @Override
-    public void deleteAllAssociationsById(int gift_id) {
-        jdbcOperations.update(SqlQueries.DELETE_ASSOCIATION, gift_id);
+    public void deleteAllAssociationsById(int gift_id, int tag_id) {
+        jdbcOperations.update(SqlQueries.DELETE_ASSOCIATION, gift_id, tag_id);
     }
 
     private Object mapper(ResultSet resultSet, int row) throws SQLException {

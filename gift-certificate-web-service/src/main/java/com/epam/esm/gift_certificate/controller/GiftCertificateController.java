@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -30,8 +31,8 @@ public class GiftCertificateController {
 
     @GetMapping
     @ResponseBody
-    public List<GiftCertificate> getAllGiftCertificates() {
-        return giftCertificateService.readAllGiftCertificates();
+    public List<GiftCertificate> getAllGiftCertificates(@RequestParam(value = "sort", required = false) String sortType) {
+        return giftCertificateService.readAllGiftCertificates(sortType);
     }
 
     @GetMapping ("/{id}")
@@ -42,12 +43,13 @@ public class GiftCertificateController {
 
     @GetMapping("/tag/{tag}")
     @ResponseBody
-    public List<GiftCertificate> getAllGiftCertificates(@PathVariable("tag") String tag) {
-        return giftCertificateService.readAllGiftCertificates(tag);
+    public List<GiftCertificate> getAllGiftCertificatesByTag(@PathVariable("tag") String tag) {
+        return giftCertificateService.readAllGiftCertificatesByTag(tag);
     }
 
     @PostMapping
     @ResponseBody
+    @ResponseStatus(HttpStatus.CREATED)
     public GiftCertificate addGiftCertificate(@RequestBody GiftCertificate giftCertificate) {
         return giftCertificateService.createGiftCertificate(giftCertificate);
     }
@@ -56,7 +58,8 @@ public class GiftCertificateController {
     @ResponseBody
     public GiftCertificate updateNameOfGiftCertificate(@PathVariable("id") int id
             , @RequestBody GiftCertificate giftCertificate) {
-        return giftCertificateService.updateGiftCertificate(id, giftCertificate);
+        giftCertificate.setId(id);
+        return giftCertificateService.updateGiftCertificate(giftCertificate);
     }
 
     @DeleteMapping( "/{id}")
@@ -64,5 +67,7 @@ public class GiftCertificateController {
     public void deleteNameOfGiftCertificate(@PathVariable("id") int id) {
         giftCertificateService.deleteGiftCertificate(id);
     }
+
+
 
 }

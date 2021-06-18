@@ -17,5 +17,5 @@ public interface TagDao<T extends Entity> {
 
     Optional<Tag> getTagByName(String name);
 
-    List<T> getTagList(int id);
+    List<T> getTagsByGiftCertificateId(int giftCertificateId);
 }

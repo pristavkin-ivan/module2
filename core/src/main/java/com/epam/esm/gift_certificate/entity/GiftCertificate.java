@@ -80,36 +80,52 @@ public final class GiftCertificate implements Entity {
         this.id = id;
     }
 
-    public Integer getDuration() {
-        return duration;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
         return description;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public Double getPrice() {
         return price;
     }
 
-    public List<Tag> getTags() {
-        return tags;
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public Integer getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Integer duration) {
+        this.duration = duration;
     }
 
     public String getCreateDate() {
         return createDate;
     }
 
-    public String getLastUpdateDate() {
-        return lastUpdateDate;
-    }
-
     public void setCreateDate(String createDate) {
         this.createDate = createDate;
     }
 
+    public String getLastUpdateDate() {
+        return lastUpdateDate;
+    }
+
     public void setLastUpdateDate(String lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
+    }
+
+    public List<Tag> getTags() {
+        return tags;
     }
 
     public void setTags(List<Tag> tags) {

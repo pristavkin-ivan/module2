@@ -2,8 +2,6 @@ package com.epam.esm.gift_certificate.dao.impl;
 
 import com.epam.esm.gift_certificate.dao.api.TagDao;
 import com.epam.esm.gift_certificate.entity.Tag;
-import com.epam.esm.gift_certificate.dao.api.SqlLabels;
-import com.epam.esm.gift_certificate.dao.api.SqlQueries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +12,10 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import java.util.Optional;
 
+//todo бросить кастомным exception, обработать в Exception handler controller
 @Repository
 public final class TagDaoImpl implements TagDao<Tag> {
 
@@ -39,8 +37,8 @@ public final class TagDaoImpl implements TagDao<Tag> {
     }
 
     @Override
-    public List<Tag> getTagList(int id) {
-        return jdbcOperations.query(SqlQueries.SELECT_TAG_LIST, this::mapTag, id);
+    public List<Tag> getTagsByGiftCertificateId(int giftCertificateId) {
+        return jdbcOperations.query(SqlQueries.SELECT_TAG_LIST, this::mapTag, giftCertificateId);
     }
 
     @Override
@@ -51,7 +49,6 @@ public final class TagDaoImpl implements TagDao<Tag> {
                     , this::mapTag
                     , id));
         } catch (IncorrectResultSizeDataAccessException exception) {
-            //todo редирект на страницу ошибки с кастомным exception
             LOGGER.info(NO_SUCH_TAG);
         }
         return Optional.empty();
@@ -80,7 +77,6 @@ public final class TagDaoImpl implements TagDao<Tag> {
                     , this::mapTag
                     , name));
         } catch (IncorrectResultSizeDataAccessException exception) {
-            //todo редирект на страницу ошибки с кастомным exception
             LOGGER.info(NO_SUCH_TAG);
         }
         return Optional.empty();
