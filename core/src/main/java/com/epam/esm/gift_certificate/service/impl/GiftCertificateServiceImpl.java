@@ -1,18 +1,22 @@
 package com.epam.esm.gift_certificate.service.impl;
 
 import com.epam.esm.gift_certificate.dao.api.GiftCertificateDao;
+import com.epam.esm.gift_certificate.model.dto.GiftCertificateDto;
 import com.epam.esm.gift_certificate.dao.api.GiftsTagsDao;
 import com.epam.esm.gift_certificate.dao.api.TagDao;
-import com.epam.esm.gift_certificate.entity.GiftCertificate;
-import com.epam.esm.gift_certificate.entity.Tag;
+import com.epam.esm.gift_certificate.exception.NoSuchTagException;
+import com.epam.esm.gift_certificate.exception.TagCreationException;
+import com.epam.esm.gift_certificate.model.entity.GiftCertificate;
+import com.epam.esm.gift_certificate.model.entity.Tag;
+import com.epam.esm.gift_certificate.exception.NoSuchCertificateException;
 import com.epam.esm.gift_certificate.service.api.GiftCertificateService;
 import com.epam.esm.gift_certificate.util.IsoDateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZonedDateTime;
-import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,6 +30,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private final GiftsTagsDao giftsTagsDao;
 
+    private final static String NAME_FIELD = "name";
+
+    private final static String DESCRIPTION_FIELD = "description";
+
     @Autowired
     public GiftCertificateServiceImpl(GiftCertificateDao<GiftCertificate> giftCertificateDao, TagDao<Tag> tagDao
             , GiftsTagsDao giftsTagsDao) {
@@ -35,50 +43,59 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificate> readAllGiftCertificates(String sortType) {
-        final List<GiftCertificate> giftCertificates = giftCertificateDao.getAll();
+    public List<GiftCertificateDto> readAllGiftCertificates(GetAllState getAllState) {
+        ArrayList<String> words = null;
+        final Collection<String> searchWords = getAllState.getSearchMap().values();
 
-        giftCertificates.forEach((giftCertificate)
-                -> giftCertificate.setTags(tagDao.getTagsByGiftCertificateId(giftCertificate.getId())));
-
-        return giftCertificates.stream().sorted(chooseComparator(sortType)).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<GiftCertificate> readAllGiftCertificatesByTag(String tag) {
-        final List<GiftCertificate> giftCertificates = giftCertificateDao.getAll(tag);
-
-        giftCertificates.forEach((giftCertificate)
-                -> giftCertificate.setTags(tagDao.getTagsByGiftCertificateId(giftCertificate.getId())));
-
-        return giftCertificates;
-    }
-
-    @Override
-    public GiftCertificate readGiftCertificate(int id) {
-        final Optional<GiftCertificate> giftCertificateOptional = giftCertificateDao.get(id);
-        GiftCertificate giftCertificate = null;
-
-        if (giftCertificateOptional.isPresent()) {
-            giftCertificate = giftCertificateOptional.get();
-            giftCertificate.setTags(tagDao.getTagsByGiftCertificateId(id));
+        if (!searchWords.isEmpty()) {
+            words = new ArrayList<>(searchWords);
         }
 
-        return giftCertificate;
+        final List<GiftCertificate> giftCertificates = giftCertificateDao.getAll(resolveQuery(getAllState), words);
+        final List<GiftCertificateDto> dtos = giftCertificates.stream().map(this::mapToDto).collect(Collectors.toList());
+
+        dtos.forEach((certificate)
+                -> certificate.setTags(tagDao.getTagsByGiftCertificateId(certificate.getId())));
+
+        return dtos;
     }
 
-    //todo context holder?
     @Override
+    public List<GiftCertificateDto> readAllGiftCertificatesByTag(String tag) {
+        final List<GiftCertificate> giftCertificates = giftCertificateDao.getAll(tag);
+
+        final List<GiftCertificateDto> dtos = giftCertificates.stream().map(this::mapToDto).collect(Collectors.toList());
+
+        dtos.forEach((certificate)
+                -> certificate.setTags(tagDao.getTagsByGiftCertificateId(certificate.getId())));
+
+        return dtos;
+    }
+
+    @Override
+    public GiftCertificateDto readGiftCertificate(int id) throws NoSuchCertificateException {
+        final Optional<GiftCertificate> giftCertificateOptional = giftCertificateDao.get(id);
+        GiftCertificateDto dto = null;
+
+        if (giftCertificateOptional.isPresent()) {
+            dto = mapToDto(giftCertificateOptional.get());
+            dto.setTags(tagDao.getTagsByGiftCertificateId(id));
+        }
+
+        return dto;
+    }
+
+    @Override
+    @SuppressWarnings("all")
     @Transactional
-    public GiftCertificate createGiftCertificate(GiftCertificate giftCertificate) {
-        final String time = IsoDateUtil.getCurrentTimeInIsoFormat();
-        final List<Tag> tags = giftCertificate.getTags();
+    public GiftCertificateDto createGiftCertificate(GiftCertificateDto certificateDto)
+            throws NoSuchCertificateException, NoSuchTagException, TagCreationException {
 
-        giftCertificate.setCreateDate(time);
-        giftCertificate.setLastUpdateDate(time);
-        giftCertificateDao.create(giftCertificate);
+        final List<Tag> tags = certificateDto.getTags();
 
-        final Integer newId = giftCertificateDao.getLastRow().orElse(giftCertificate).getId();
+        giftCertificateDao.create(mapToEntity(certificateDto));
+
+        final Integer newId = giftCertificateDao.getLastRow().get().getId();
 
         if (tags != null) {
             populateTagsCreate(newId, tags);
@@ -89,27 +106,29 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     @Transactional
-    public GiftCertificate updateGiftCertificate(GiftCertificate giftCertificate) {
-        final String lastModifiedTime = IsoDateUtil.getCurrentTimeInIsoFormat();
-        final List<Tag> tags = giftCertificate.getTags();
+    public GiftCertificateDto updateGiftCertificate(GiftCertificateDto certificateDto)
+            throws NoSuchCertificateException, NoSuchTagException, TagCreationException {
 
-        giftCertificate.setLastUpdateDate(lastModifiedTime);
-        giftCertificateDao.update(giftCertificate);
+        final List<Tag> tags = certificateDto.getTags();
+
+        giftCertificateDao.update(mapToEntity(certificateDto));
 
         if (tags != null) {
-            populateTagsUpdate(giftCertificate.getId(), tags);
+            populateTagsUpdate(certificateDto.getId(), tags);
         }
 
-        return readGiftCertificate(giftCertificate.getId());
+        return readGiftCertificate(certificateDto.getId());
     }
 
     @Override
-    public void deleteGiftCertificate(int id) {
+    public void deleteGiftCertificate(int id) throws NoSuchCertificateException {
         giftCertificateDao.delete(id);
     }
 
     @SuppressWarnings("all")
-    private void populateTagsCreate(int giftCertificateId, List<Tag> insertedTags) {
+    private void populateTagsCreate(int giftCertificateId, List<Tag> insertedTags)
+            throws NoSuchTagException, TagCreationException {
+
         List<Tag> allTags = tagDao.getAll();
 
         for (Tag insertedTag : insertedTags) {
@@ -124,7 +143,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
     }
 
-    private void populateTagsUpdate(int giftCertificateId, List<Tag> insertedTags) {
+    private void populateTagsUpdate(int giftCertificateId, List<Tag> insertedTags)
+            throws NoSuchTagException, TagCreationException {
+
         List<Tag> actualTags = tagDao.getTagsByGiftCertificateId(giftCertificateId);
         List<Tag> allTags = tagDao.getAll();
 
@@ -153,7 +174,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
     }
 
-    private int processNewTags(List<Tag> allTags, Tag insertedTag) {
+    private int processNewTags(List<Tag> allTags, Tag insertedTag) throws NoSuchTagException, TagCreationException {
         if (allTags.stream().noneMatch(tag -> tag.getName().equals(insertedTag.getName()))) {
             return tagDao.create(insertedTag).orElse(insertedTag).getId();
         }
@@ -166,45 +187,60 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
     }
 
-
-    private int compareByNameDesc(GiftCertificate giftCertificate1, GiftCertificate giftCertificate2) {
-        return giftCertificate1.getName().compareTo(giftCertificate2.getName());
+    private GiftCertificateDto mapToDto(GiftCertificate certificate) {
+        return new GiftCertificateDto(certificate.getId()
+                , certificate.getName()
+                , certificate.getDescription()
+                , certificate.getPrice()
+                , certificate.getDuration()
+                , IsoDateUtil.getCurrentTimeInIsoFormat(certificate.getCreateDate())
+                , IsoDateUtil.getCurrentTimeInIsoFormat(certificate.getLastUpdateDate())
+                , new ArrayList<>());
     }
 
-    private int compareByNameAsc(GiftCertificate giftCertificate1, GiftCertificate giftCertificate2) {
-        return giftCertificate2.getName().compareTo(giftCertificate1.getName());
+    private GiftCertificate mapToEntity(GiftCertificateDto certificate) {
+        return new GiftCertificate(certificate.getId()
+                , certificate.getName()
+                , certificate.getDescription()
+                , certificate.getPrice()
+                , certificate.getDuration()
+                , null
+                , null
+                , new ArrayList<>());
     }
 
-    private int compareByDateDesc(GiftCertificate giftCertificate1, GiftCertificate giftCertificate2) {
-        final String date1 = giftCertificate1.getCreateDate();
-        final String date2 = giftCertificate2.getCreateDate();
-        return ZonedDateTime.parse(date2).compareTo(ZonedDateTime.parse(date1));
+    private String resolveQuery(GetAllState getAllState) {
+        StringBuffer query = new StringBuffer(GetAllParts.select);
+
+        searchLogic(getAllState, query);
+        sortLogic(getAllState, GetAllParts.orderBy, query);
+
+        return query.toString();
     }
 
-    private int compareByDateAsc(GiftCertificate giftCertificate1, GiftCertificate giftCertificate2) {
-        final String date1 = giftCertificate1.getCreateDate();
-        final String date2 = giftCertificate2.getCreateDate();
-        return ZonedDateTime.parse(date1).compareTo(ZonedDateTime.parse(date2));
-    }
-
-    private Comparator<GiftCertificate> chooseComparator(String sortType) {
-        if (sortType == null) {
-            return this::compareByNameDesc;
+    private void sortLogic(GetAllState getAllState, String orderBy, StringBuffer query) {
+        if (!getAllState.getSortTypes().isEmpty()) {
+            query.append(orderBy).append(getAllState.getSortTypes().get(0));
+            getAllState.getSortTypes().stream().skip(1).forEach((sortType) -> query.append(", ").append(sortType));
         }
+    }
 
-        switch (sortType) {
-            case "date-asc": {
-                return this::compareByDateAsc;
+    private void searchLogic(GetAllState getAllState, StringBuffer query) {
+
+        if (!getAllState.getSearchMap().isEmpty()) {
+            query.append(GetAllParts.where);
+
+            if (getAllState.getSearchMap().get(NAME_FIELD) != null) {
+                query.append(GetAllParts.locateName);
             }
-            case "date-desc": {
-                return this::compareByDateDesc;
+
+            if (getAllState.getSearchMap().get(DESCRIPTION_FIELD) != null) {
+                if (getAllState.getSearchMap().size() > 1) {
+                    query.append(GetAllParts.and);
+                }
+                query.append(GetAllParts.locateDescription);
             }
-            case "name-asc": {
-                return this::compareByNameAsc;
-            }
-            default: {
-                return this::compareByNameDesc;
-            }
+
         }
     }
 

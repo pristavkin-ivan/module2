@@ -24,8 +24,6 @@ import javax.sql.DataSource;
 @PropertySource("classpath:db.properties")
 public class ContextConfig implements WebMvcConfigurer {
 
-    private final static String UTC_ZONE = "UTC";
-
     @Bean
     public DataSource hikariDataSource(@Value("${url}") String url
             , @Value("${user}")String user, @Value("${password}") String password) {

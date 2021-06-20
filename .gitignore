@@ -10,3 +10,4 @@ gradlew
 gradlew.bat
 core/src/main/resources/
 gift-certificate-web-service/src/main/resources/
+core/src/main/java/com/epam/esm/gift_certificate/dao/impl/Table.java

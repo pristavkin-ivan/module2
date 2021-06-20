@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.epam.esm.gift_certificate.config.T" tests="1" skipped="0" failures="0" errors="0" timestamp="2021-06-17T18:28:19" hostname="DESKTOP-Q9RC5EP" time="0.021">
-  <properties/>
-  <testcase name="heyTest()" classname="com.epam.esm.gift_certificate.config.T" time="0.021"/>
-  <system-out><![CDATA[[GiftCertificate{id=0, name='vasya', description='asdasdasd fasf', price=44.5, duration=10, createDate='2021-05-16T22:56:21.679Z', lastUpdateDate='2021-05-16T22:56:21.679Z', tags=[]}, GiftCertificate{id=0, name='maksim', description='asdasdasd fasf', price=44.5, duration=10, createDate='2021-06-16T22:50:21.679Z', lastUpdateDate='2021-06-16T22:50:21.679Z', tags=[]}, GiftCertificate{id=0, name='anya', description='asdasdasd fasf', price=44.5, duration=10, createDate='2021-06-16T22:56:21.679Z', lastUpdateDate='2021-06-16T22:56:21.679Z', tags=[]}, GiftCertificate{id=0, name='vanya', description='asdasdasd fasf', price=44.5, duration=10, createDate='2021-06-17T22:56:21.679Z', lastUpdateDate='2021-06-17T22:56:21.679Z', tags=[]}]
-]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

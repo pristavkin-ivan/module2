@@ -6,9 +6,6 @@ public class SqlQueries {
      * Gift_certificate queries
      */
 
-    static String SELECT_ALL_GIFT_CERTIFICATES = "select g_id, g_name, g_description, g_price, g_duration" +
-            ", g_create_date, g_last_update_date from gift_certificate";
-
     static String SELECT_ALL_GIFT_CERTIFICATES_BY_TAG = "select g_id, g_name, g_description, g_price, g_duration" +
             ", g_create_date, g_last_update_date from gift_certificate " +
             "join gifts_tags on g_id = gift_id " +
@@ -21,13 +18,13 @@ public class SqlQueries {
     static String DELETE_GIFT_CERTIFICATE = " delete from gift_certificate where g_id = ?";
 
     static String INSERT_GIFT_CERTIFICATES = "insert into gift_certificate(g_name, g_description, g_price, g_duration" +
-            ", g_create_date, g_last_update_date) values(?,?,?,?,?,?)";
+            ", g_create_date, g_last_update_date) values(?,?,?,?,current_timestamp(),current_timestamp())";
 
     static String SELECT_LAST_INSERT_CERTIFICATE = "select g_id, g_name, g_description, g_price, g_duration" +
             ", g_create_date, g_last_update_date from gift_certificate where g_id = LAST_INSERT_ID()";
 
     static String UPDATE_GIFT_CERTIFICATE = "update gift_certificate set g_name = ?, g_description = ?, g_price = ?" +
-            ", g_duration = ?, g_last_update_date = ? where g_id = ?";
+            ", g_duration = ?, g_last_update_date = current_timestamp() where g_id = ?";
 
     /**
      * Gifts_tags queries

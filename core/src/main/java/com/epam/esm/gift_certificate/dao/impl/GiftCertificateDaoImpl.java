@@ -1,11 +1,13 @@
 package com.epam.esm.gift_certificate.dao.impl;
 
 import com.epam.esm.gift_certificate.dao.api.GiftCertificateDao;
-import com.epam.esm.gift_certificate.entity.GiftCertificate;
+import com.epam.esm.gift_certificate.model.entity.GiftCertificate;
 
+import com.epam.esm.gift_certificate.exception.NoSuchCertificateException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
@@ -19,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-//todo бросать кастомные exception, обработать в Exception handler controller
 @Repository
 public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificate> {
 
@@ -27,17 +28,21 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificat
 
     private final static Logger LOGGER = LogManager.getLogger(GiftCertificateDaoImpl.class);
 
-    private final static String NO_SUCH_CERTIFICATE = "No such gift-certificate";
+    private final static String NO_SUCH_CERTIFICATE = "No such gift-certificate! id: ";
 
     @Autowired
     public GiftCertificateDaoImpl(JdbcOperations jdbcOperations) {
         this.jdbcOperations = jdbcOperations;
     }
 
-    @Override
-    public List<GiftCertificate> getAll() {
-        final List<GiftCertificate> giftCertificates = jdbcOperations
-                .query(SqlQueries.SELECT_ALL_GIFT_CERTIFICATES, this::mapGiftCertificate);
+    public List<GiftCertificate> getAll(String query, List<String> words) {
+        List<GiftCertificate> giftCertificates;
+
+        if (words == null || words.isEmpty()) {
+            giftCertificates = jdbcOperations.query(query, this::mapGiftCertificate);
+        } else {
+            giftCertificates = jdbcOperations.query(query, this::mapGiftCertificate, words.toArray());
+        }
 
         if (giftCertificates.isEmpty()) {
             return Collections.emptyList();
@@ -71,8 +76,8 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificat
     }
 
     @Override
-    public Optional<GiftCertificate> get(int id) {
-        GiftCertificate giftCertificate = null;
+    public Optional<GiftCertificate> get(int id) throws NoSuchCertificateException {
+        GiftCertificate giftCertificate;
 
         try {
             giftCertificate = jdbcOperations.queryForObject(
@@ -80,27 +85,38 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificat
                     , this::mapGiftCertificate
                     , id);
         } catch (IncorrectResultSizeDataAccessException exception) {
-            LOGGER.info(NO_SUCH_CERTIFICATE);
+            LOGGER.info(NO_SUCH_CERTIFICATE + id);
+            throw new NoSuchCertificateException(NO_SUCH_CERTIFICATE + id);
         }
         return Optional.ofNullable(giftCertificate);
+
     }
 
     @SuppressWarnings("all")
     @Override
-    public void update(GiftCertificate giftCertificate) {
+    public void update(GiftCertificate giftCertificate) throws NoSuchCertificateException {
         GiftCertificate modifyingGiftCertificate = get(giftCertificate.getId()).get();
 
         updateLogic(modifyingGiftCertificate, giftCertificate);
 
-        jdbcOperations.update(SqlQueries.UPDATE_GIFT_CERTIFICATE, modifyingGiftCertificate.getName()
-                , modifyingGiftCertificate.getDescription(), modifyingGiftCertificate.getPrice()
-                , modifyingGiftCertificate.getDuration(), modifyingGiftCertificate.getLastUpdateDate()
-                , modifyingGiftCertificate.getId());
+        try {
+            jdbcOperations.update(SqlQueries.UPDATE_GIFT_CERTIFICATE, modifyingGiftCertificate.getName()
+                    , modifyingGiftCertificate.getDescription(), modifyingGiftCertificate.getPrice()
+                    , modifyingGiftCertificate.getDuration(), modifyingGiftCertificate.getId());
+        } catch (DataAccessException exception) {
+            LOGGER.info(NO_SUCH_CERTIFICATE + giftCertificate.getId());
+            throw new NoSuchCertificateException(NO_SUCH_CERTIFICATE + giftCertificate.getId());
+        }
     }
 
     @Override
-    public void delete(int id) {
-        jdbcOperations.update(SqlQueries.DELETE_GIFT_CERTIFICATE, id);
+    public void delete(int id) throws NoSuchCertificateException {
+        try {
+            jdbcOperations.update(SqlQueries.DELETE_GIFT_CERTIFICATE, id);
+        } catch (DataAccessException exception) {
+            LOGGER.info(NO_SUCH_CERTIFICATE + id);
+            throw new NoSuchCertificateException(NO_SUCH_CERTIFICATE + id);
+        }
     }
 
     @Override
@@ -110,9 +126,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificat
                 , giftCertificate.getName()
                 , giftCertificate.getDescription()
                 , giftCertificate.getPrice()
-                , giftCertificate.getDuration()
-                , giftCertificate.getCreateDate()
-                , giftCertificate.getLastUpdateDate());
+                , giftCertificate.getDuration());
     }
 
     private GiftCertificate mapGiftCertificate(ResultSet resultSet, int row) throws SQLException {
@@ -122,8 +136,8 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificat
                 , resultSet.getString(SqlLabels.G_DESCRIPTION)
                 , resultSet.getDouble(SqlLabels.G_PRICE)
                 , resultSet.getInt(SqlLabels.G_DURATION)
-                , resultSet.getString(SqlLabels.G_CREATE_DATE)
-                , resultSet.getString(SqlLabels.G_LAST_UPDATE_DATE)
+                , resultSet.getTimestamp(SqlLabels.G_CREATE_DATE)
+                , resultSet.getTimestamp(SqlLabels.G_LAST_UPDATE_DATE)
                 , new ArrayList<>());
     }
 
@@ -143,8 +157,6 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificat
         if (giftCertificate.getDuration() != null) {
             modifyingGiftCertificate.setDuration(giftCertificate.getDuration());
         }
-
-        modifyingGiftCertificate.setLastUpdateDate(giftCertificate.getLastUpdateDate());
     }
 
 }

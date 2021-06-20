@@ -1,7 +1,9 @@
 package com.epam.esm.gift_certificate.service.impl;
 
 import com.epam.esm.gift_certificate.dao.api.TagDao;
-import com.epam.esm.gift_certificate.entity.Tag;
+import com.epam.esm.gift_certificate.exception.NoSuchTagException;
+import com.epam.esm.gift_certificate.exception.TagCreationException;
+import com.epam.esm.gift_certificate.model.entity.Tag;
 import com.epam.esm.gift_certificate.service.api.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,17 +26,17 @@ public final class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Tag read(int id) {
+    public Tag read(int id) throws NoSuchTagException {
         return tagDao.get(id).orElse(null);
     }
 
     @Override
-    public void delete(int id) {
+    public void delete(int id) throws NoSuchTagException {
         tagDao.delete(id);
     }
 
     @Override
-    public Tag create(Tag tag) {
+    public Tag create(Tag tag) throws NoSuchTagException, TagCreationException {
         return tagDao.create(tag).orElse(tag);
     }
 
