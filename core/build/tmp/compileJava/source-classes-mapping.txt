@@ -1,5 +1,5 @@
-com/epam/esm/gift_certificate/dao/impl/SqlQueries.java
- com.epam.esm.gift_certificate.dao.impl.SqlQueries
+com/epam/esm/gift_certificate/service/api/GiftCertificateService.java
+ com.epam.esm.gift_certificate.service.api.GiftCertificateService
 com/epam/esm/gift_certificate/service/api/TagService.java
  com.epam.esm.gift_certificate.service.api.TagService
 com/epam/esm/gift_certificate/model/entity/GiftCertificate.java
@@ -20,25 +20,27 @@ com/epam/esm/gift_certificate/exception/NoSuchTagException.java
  com.epam.esm.gift_certificate.exception.NoSuchTagException
 com/epam/esm/gift_certificate/model/entity/Entity.java
  com.epam.esm.gift_certificate.model.entity.Entity
-com/epam/esm/gift_certificate/dao/impl/GiftsTagsDaoImpl.java
- com.epam.esm.gift_certificate.dao.impl.GiftsTagsDaoImpl
+com/epam/esm/gift_certificate/dao/impl/SqlLabels.java
+ com.epam.esm.gift_certificate.dao.impl.SqlLabels
 com/epam/esm/gift_certificate/service/impl/GetAllState.java
  com.epam.esm.gift_certificate.service.impl.GetAllState
 com/epam/esm/gift_certificate/service/impl/TagServiceImpl.java
  com.epam.esm.gift_certificate.service.impl.TagServiceImpl
 com/epam/esm/gift_certificate/dao/api/GiftsTagsDao.java
  com.epam.esm.gift_certificate.dao.api.GiftsTagsDao
-com/epam/esm/gift_certificate/dao/impl/TagDaoImpl.java
- com.epam.esm.gift_certificate.dao.impl.TagDaoImpl
+com/epam/esm/gift_certificate/service/impl/GetAllParts.java
+ com.epam.esm.gift_certificate.service.impl.GetAllParts
 com/epam/esm/gift_certificate/model/entity/Tag.java
  com.epam.esm.gift_certificate.model.entity.Tag
-com/epam/esm/gift_certificate/dao/impl/SqlLabels.java
- com.epam.esm.gift_certificate.dao.impl.SqlLabels
-com/epam/esm/gift_certificate/service/api/GiftCertificateService.java
- com.epam.esm.gift_certificate.service.api.GiftCertificateService
+com/epam/esm/gift_certificate/dao/impl/SqlQueries.java
+ com.epam.esm.gift_certificate.dao.impl.SqlQueries
+com/epam/esm/gift_certificate/dao/impl/GiftsTagsDaoImpl.java
+ com.epam.esm.gift_certificate.dao.impl.GiftsTagsDaoImpl
+com/epam/esm/gift_certificate/dao/impl/TagDaoImpl.java
+ com.epam.esm.gift_certificate.dao.impl.TagDaoImpl
 com/epam/esm/gift_certificate/dao/api/GiftCertificateDao.java
  com.epam.esm.gift_certificate.dao.api.GiftCertificateDao
-com/epam/esm/gift_certificate/dao/impl/GiftCertificateDaoImpl.java
- com.epam.esm.gift_certificate.dao.impl.GiftCertificateDaoImpl
 com/epam/esm/gift_certificate/service/impl/GiftCertificateServiceImpl.java
  com.epam.esm.gift_certificate.service.impl.GiftCertificateServiceImpl
+com/epam/esm/gift_certificate/dao/impl/GiftCertificateDaoImpl.java
+ com.epam.esm.gift_certificate.dao.impl.GiftCertificateDaoImpl

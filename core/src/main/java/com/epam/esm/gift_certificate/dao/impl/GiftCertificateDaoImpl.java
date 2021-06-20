@@ -11,14 +11,20 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -61,18 +67,6 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificat
         }
 
         return giftCertificates;
-    }
-
-    @Override
-    public Optional<GiftCertificate> getLastRow() {
-        try {
-            return Optional.ofNullable(jdbcOperations.queryForObject(
-                    SqlQueries.SELECT_LAST_INSERT_CERTIFICATE
-                    , this::mapGiftCertificate));
-        } catch (EmptyResultDataAccessException exception) {
-            LOGGER.info(exception);
-        }
-        return Optional.empty();
     }
 
     @Override
@@ -120,13 +114,14 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificat
     }
 
     @Override
-    public void create(GiftCertificate giftCertificate) {
-        jdbcOperations.update(
-                SqlQueries.INSERT_GIFT_CERTIFICATES
-                , giftCertificate.getName()
-                , giftCertificate.getDescription()
-                , giftCertificate.getPrice()
-                , giftCertificate.getDuration());
+    public Integer create(GiftCertificate giftCertificate) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcOperations.update(connection -> createPreparedStatement(connection, giftCertificate.getName()
+                , giftCertificate.getDescription(), giftCertificate.getPrice(), giftCertificate.getDuration())
+                , keyHolder);
+
+        return Objects.requireNonNull(keyHolder.getKey()).intValue();
     }
 
     private GiftCertificate mapGiftCertificate(ResultSet resultSet, int row) throws SQLException {
@@ -157,6 +152,17 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificat
         if (giftCertificate.getDuration() != null) {
             modifyingGiftCertificate.setDuration(giftCertificate.getDuration());
         }
+    }
+
+    private PreparedStatement createPreparedStatement(Connection connection, String name, String description
+            , Double price, Integer duration) throws SQLException {
+
+        PreparedStatement ps = connection.prepareStatement(SqlQueries.INSERT_GIFT_CERTIFICATES, new String[]{"id"});
+        ps.setString(1, name);
+        ps.setString(2, description);
+        ps.setDouble(3, price);
+        ps.setInt(4, duration);
+        return ps;
     }
 
 }

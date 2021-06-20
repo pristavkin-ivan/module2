@@ -16,9 +16,7 @@ public interface GiftCertificateDao<T extends Entity> {
 
     void delete(int id) throws NoSuchCertificateException;
 
-    void create(T entity);
+    Integer create(T entity);
 
     void update(T entity) throws NoSuchCertificateException;
-
-    Optional<T> getLastRow();
 }

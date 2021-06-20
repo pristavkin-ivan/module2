@@ -2,6 +2,9 @@ package com.epam.esm.gift_certificate.config;
 
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+
 public class DispatcherServletConfig extends AbstractAnnotationConfigDispatcherServletInitializer {
 
     @Override
@@ -19,4 +22,10 @@ public class DispatcherServletConfig extends AbstractAnnotationConfigDispatcherS
         return new String[] {"/"};
     }
 
+    @Override
+    public void onStartup(ServletContext servletContext) throws ServletException {
+        super.onStartup(servletContext);
+        servletContext.setInitParameter(
+                "spring.profiles.active", "dev");
+    }
 }

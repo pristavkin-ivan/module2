@@ -92,10 +92,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             throws NoSuchCertificateException, NoSuchTagException, TagCreationException {
 
         final List<Tag> tags = certificateDto.getTags();
-
-        giftCertificateDao.create(mapToEntity(certificateDto));
-
-        final Integer newId = giftCertificateDao.getLastRow().get().getId();
+        final Integer newId = giftCertificateDao.create(mapToEntity(certificateDto));
 
         if (tags != null) {
             populateTagsCreate(newId, tags);
