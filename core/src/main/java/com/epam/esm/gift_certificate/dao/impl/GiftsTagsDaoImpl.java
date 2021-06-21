@@ -25,23 +25,8 @@ public class GiftsTagsDaoImpl implements GiftsTagsDao {
     }
 
     @Override
-    public boolean isAssociationExists(int gift_id, int tag_id) {
-        try {
-            jdbcOperations.queryForObject(SqlQueries.SELECT_ASSOCIATION_BY_TAG_ID, this::mapper, tag_id, gift_id);
-        } catch (IncorrectResultSizeDataAccessException exception) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
     public void deleteAllAssociationsById(int gift_id, int tag_id) {
         jdbcOperations.update(SqlQueries.DELETE_ASSOCIATION, gift_id, tag_id);
-    }
-
-    private Object mapper(ResultSet resultSet, int row) throws SQLException {
-        resultSet.getInt(SqlLabels.TAG_ID);
-        return new Object();
     }
 
 }

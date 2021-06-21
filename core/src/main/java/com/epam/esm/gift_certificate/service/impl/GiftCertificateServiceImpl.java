@@ -43,15 +43,15 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificateDto> readAllGiftCertificates(GetAllState getAllState) {
+    public List<GiftCertificateDto> readAllGiftCertificates(ParamContext paramContext) {
         ArrayList<String> words = null;
-        final Collection<String> searchWords = getAllState.getSearchMap().values();
+        final Collection<String> searchWords = paramContext.getSearchMap().values();
 
         if (!searchWords.isEmpty()) {
             words = new ArrayList<>(searchWords);
         }
 
-        final List<GiftCertificate> giftCertificates = giftCertificateDao.getAll(resolveQuery(getAllState), words);
+        final List<GiftCertificate> giftCertificates = giftCertificateDao.getAll(resolveQuery(paramContext), words);
         final List<GiftCertificateDto> dtos = giftCertificates.stream().map(this::mapToDto).collect(Collectors.toList());
 
         dtos.forEach((certificate)
@@ -206,36 +206,36 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 , new ArrayList<>());
     }
 
-    private String resolveQuery(GetAllState getAllState) {
-        StringBuffer query = new StringBuffer(GetAllParts.select);
+    private String resolveQuery(ParamContext paramContext) {
+        StringBuffer query = new StringBuffer(QueryParts.select);
 
-        searchLogic(getAllState, query);
-        sortLogic(getAllState, GetAllParts.orderBy, query);
+        searchLogic(paramContext, query);
+        sortLogic(paramContext, QueryParts.orderBy, query);
 
         return query.toString();
     }
 
-    private void sortLogic(GetAllState getAllState, String orderBy, StringBuffer query) {
-        if (!getAllState.getSortTypes().isEmpty()) {
-            query.append(orderBy).append(getAllState.getSortTypes().get(0));
-            getAllState.getSortTypes().stream().skip(1).forEach((sortType) -> query.append(", ").append(sortType));
+    private void sortLogic(ParamContext paramContext, String orderBy, StringBuffer query) {
+        if (!paramContext.getSortTypes().isEmpty()) {
+            query.append(orderBy).append(paramContext.getSortTypes().get(0));
+            paramContext.getSortTypes().stream().skip(1).forEach((sortType) -> query.append(", ").append(sortType));
         }
     }
 
-    private void searchLogic(GetAllState getAllState, StringBuffer query) {
+    private void searchLogic(ParamContext paramContext, StringBuffer query) {
 
-        if (!getAllState.getSearchMap().isEmpty()) {
-            query.append(GetAllParts.where);
+        if (!paramContext.getSearchMap().isEmpty()) {
+            query.append(QueryParts.where);
 
-            if (getAllState.getSearchMap().get(NAME_FIELD) != null) {
-                query.append(GetAllParts.locateName);
+            if (paramContext.getSearchMap().get(NAME_FIELD) != null) {
+                query.append(QueryParts.locateName);
             }
 
-            if (getAllState.getSearchMap().get(DESCRIPTION_FIELD) != null) {
-                if (getAllState.getSearchMap().size() > 1) {
-                    query.append(GetAllParts.and);
+            if (paramContext.getSearchMap().get(DESCRIPTION_FIELD) != null) {
+                if (paramContext.getSearchMap().size() > 1) {
+                    query.append(QueryParts.and);
                 }
-                query.append(GetAllParts.locateDescription);
+                query.append(QueryParts.locateDescription);
             }
 
         }

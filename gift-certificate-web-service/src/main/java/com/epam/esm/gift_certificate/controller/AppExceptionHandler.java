@@ -31,10 +31,11 @@ public class AppExceptionHandler {
 
     @ExceptionHandler(NoSuchCertificateException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ExceptionDto handleNoSuchCertificateException(NoSuchCertificateException exception) {
-        String errorMessage = messageSource.getMessage("noCertificate", null, "Unknown error", new Locale("ru", "US"));
-        System.out.println(errorMessage);
-        return new ExceptionDto(HttpStatus.NOT_FOUND.value() + CERTIFICATE_CODE, exception.getMessage());
+    public ExceptionDto handleNoSuchCertificateException(NoSuchCertificateException exception, Locale locale) {
+        String errorMessage = messageSource.getMessage("noCertificate", null, "Unknown error"
+                , locale);
+
+        return new ExceptionDto(HttpStatus.NOT_FOUND.value() + CERTIFICATE_CODE, errorMessage);
     }
 
     @ExceptionHandler(NoSuchTagException.class)

@@ -8,10 +8,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -83,7 +81,6 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificat
             throw new NoSuchCertificateException(NO_SUCH_CERTIFICATE + id);
         }
         return Optional.ofNullable(giftCertificate);
-
     }
 
     @SuppressWarnings("all")

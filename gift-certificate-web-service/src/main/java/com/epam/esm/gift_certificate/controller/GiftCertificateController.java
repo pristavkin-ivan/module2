@@ -5,7 +5,7 @@ import com.epam.esm.gift_certificate.exception.TagCreationException;
 import com.epam.esm.gift_certificate.model.dto.GiftCertificateDto;
 import com.epam.esm.gift_certificate.exception.NoSuchCertificateException;
 import com.epam.esm.gift_certificate.service.api.GiftCertificateService;
-import com.epam.esm.gift_certificate.service.impl.GetAllState;
+import com.epam.esm.gift_certificate.service.impl.ParamContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -53,7 +53,7 @@ public class GiftCertificateController {
         configureSearchingMap(searchMap, name, description);
         sortTypesList = configureSortTypesList(sortTypes, sortTypesList);
 
-        return giftCertificateService.readAllGiftCertificates(new GetAllState(searchMap, sortTypesList));
+        return giftCertificateService.readAllGiftCertificates(new ParamContext(searchMap, sortTypesList));
     }
 
     @GetMapping("/{id}")
