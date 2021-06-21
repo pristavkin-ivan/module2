@@ -1,0 +1,6 @@
+com/epam/esm/gift_certificate/dao/TagDaoTest.java
+ com.epam.esm.gift_certificate.dao.TagDaoTest
+com/epam/esm/gift_certificate/config/TestContextConfig.java
+ com.epam.esm.gift_certificate.config.TestContextConfig
+com/epam/esm/gift_certificate/dao/GiftCertificateDaoImplTest.java
+ com.epam.esm.gift_certificate.dao.GiftCertificateDaoImplTest
