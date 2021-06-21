@@ -23,7 +23,6 @@ public class AppExceptionHandler {
     private final static String CERTIFICATE_CODE = "01";
 
     private final static String TAG_CODE = "02";
-
     @Autowired
     public AppExceptionHandler(MessageSource messageSource) {
         this.messageSource = messageSource;
