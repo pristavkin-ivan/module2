@@ -1,32 +1,22 @@
 package com.epam.esm.gift_certificate.dao.api;
 
-import com.epam.esm.gift_certificate.entity.Entity;
-import com.epam.esm.gift_certificate.entity.Tag;
+import com.epam.esm.gift_certificate.model.entity.Entity;
+import com.epam.esm.gift_certificate.exception.NoSuchCertificateException;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 public interface GiftCertificateDao<T extends Entity> {
-    List<T> getAll();
 
-    Optional<T> get(int id);
-
-    void delete(int id);
-
-    void create(T entity);
-
-    void update(int id, T entity);
+    List<T> getAll(String query, List<String> words);
 
     List<T> getAll(String tag);
 
-    default Optional<Tag> getTagByName(String name) {
-        return Optional.empty();
-    }
+    Optional<T> get(int id) throws NoSuchCertificateException;
 
-    default List<T> getTagList(int id) {
-        return Collections.emptyList();
-    }
+    void delete(int id) throws NoSuchCertificateException;
 
-    T getLastRow();
+    Integer create(T entity);
+
+    void update(T entity) throws NoSuchCertificateException;
 }

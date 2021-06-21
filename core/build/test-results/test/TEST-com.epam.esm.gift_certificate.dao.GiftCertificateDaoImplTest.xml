@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.epam.esm.gift_certificate.dao.GiftCertificateDaoImplTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2021-06-20T16:09:21" hostname="DESKTOP-Q9RC5EP" time="0.37">
+  <properties/>
+  <testcase name="selectAllTest()" classname="com.epam.esm.gift_certificate.dao.GiftCertificateDaoImplTest" time="0.37"/>
+  <system-out><![CDATA[select g_id, g_name, g_description, g_price, g_duration, g_create_date, g_last_update_date from gift_certificate where locate(?,g_name) and locate(?,g_description) order by name desc, name asc
+]]></system-out>
+  <system-err><![CDATA[SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+]]></system-err>
+</testsuite>

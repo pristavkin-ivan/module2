@@ -1,66 +1,48 @@
 package com.epam.esm.gift_certificate.dao;
 
-import com.epam.esm.gift_certificate.config.TestContextConfig;
-import com.epam.esm.gift_certificate.dao.impl.GiftCertificateDaoImpl;
-import com.epam.esm.gift_certificate.entity.GiftCertificate;;
-import org.junit.jupiter.api.Assertions;
+import com.epam.esm.gift_certificate.model.entity.GiftCertificate;;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.sql.DataSource;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Properties;
 
-@ContextConfiguration(classes = {TestContextConfig.class})
-@RunWith(SpringJUnit4ClassRunner.class)
+
 public class GiftCertificateDaoImplTest {
 
     private static GiftCertificate giftCertificate;
 
-    @Autowired
     private ApplicationContext applicationContext;
 
-    @Autowired
-    GiftCertificateDaoImpl dao;
-
-    /*private static DataSource dataSource;
+    private static DataSource dataSource;
     private static final String PATH_TO_PROP = "src/test/resources/db.properties";
-    private static final String URL = "url";
-    private static final String USER = "user";
-    private static final String PASSWORD = "password";*/
+    private static final String URL = "jdbc:mysql://localhost:3306/giftcertificates?serverTimezone=Europe/Moscow";
+    private static final String USER = "root";
+    private static final String PASSWORD = "12345678L";
 
     @BeforeAll
     public static void init() {
-        final Properties properties = new Properties();
 
-        giftCertificate = new GiftCertificate(0, "vasya", "asdasdasd fasf", 44.5, 10
-                , "12.06.2021 17:07", "12.06.2021 15:07", new ArrayList<>());
+        giftCertificate = new GiftCertificate(2, "cert2", "gfgf", 30.2, 15
+                , null, null, new ArrayList<>());
 
-        /*try {
-            properties.load(new FileInputStream(PATH_TO_PROP));
             HikariConfig hikariConfig = new HikariConfig();
 
-            hikariConfig.setJdbcUrl(properties.getProperty(URL));
-            hikariConfig.setUsername(properties.getProperty(USER));
-            hikariConfig.setPassword(properties.getProperty(PASSWORD));
+            hikariConfig.setJdbcUrl(URL);
+            hikariConfig.setUsername(USER);
+            hikariConfig.setPassword(PASSWORD);
 
             dataSource = new HikariDataSource(hikariConfig);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
     }
 
     @Test
     public void selectAllTest() {
-
-        Assertions.assertNotEquals(Collections.emptyList(), dao.getAll());
-        System.out.println(dao.getAll());
+        /*GiftCertificateDaoImpl dao = new GiftCertificateDaoImpl(new JdbcTemplate(dataSource));
+        dao.create(giftCertificate);*/
     }
 
     /*@Test

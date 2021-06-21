@@ -23,6 +23,7 @@ subprojects { project->
         implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
         compile 'com.zaxxer:HikariCP:4.0.3'
         testCompile 'org.springframework:spring-test:5.3.3'
+        implementation 'commons-dbcp:commons-dbcp:1.4'
     }
 
     test {
