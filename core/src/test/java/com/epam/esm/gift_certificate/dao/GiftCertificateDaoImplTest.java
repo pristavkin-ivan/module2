@@ -1,70 +1,61 @@
 package com.epam.esm.gift_certificate.dao;
 
+import com.epam.esm.gift_certificate.config.TestContextConfig;
+import com.epam.esm.gift_certificate.dao.api.GiftCertificateDao;
+import com.epam.esm.gift_certificate.exception.NoSuchCertificateException;
 import com.epam.esm.gift_certificate.model.entity.GiftCertificate;;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.ApplicationContext;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.sql.DataSource;
-import java.util.ArrayList;
 
-
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = TestContextConfig.class)
 public class GiftCertificateDaoImplTest {
 
-    private static GiftCertificate giftCertificate;
+    private final GiftCertificateDao<GiftCertificate> giftCertificateDao;
 
-    private ApplicationContext applicationContext;
+    private static final GiftCertificate GIFT_CERTIFICATE = new GiftCertificate(10, "cert2", "gfgf"
+            , 30.2, 15, null, null);
 
-    private static DataSource dataSource;
-    private static final String PATH_TO_PROP = "src/test/resources/db.properties";
-    private static final String URL = "jdbc:mysql://localhost:3306/giftcertificates?serverTimezone=Europe/Moscow";
-    private static final String USER = "root";
-    private static final String PASSWORD = "12345678L";
-
-    @BeforeAll
-    public static void init() {
-
-        giftCertificate = new GiftCertificate(2, "cert2", "gfgf", 30.2, 15
-                , null, null, new ArrayList<>());
-
-            HikariConfig hikariConfig = new HikariConfig();
-
-            hikariConfig.setJdbcUrl(URL);
-            hikariConfig.setUsername(USER);
-            hikariConfig.setPassword(PASSWORD);
-
-            dataSource = new HikariDataSource(hikariConfig);
-
+    @Autowired
+    public GiftCertificateDaoImplTest(GiftCertificateDao<GiftCertificate> giftCertificateDao) {
+        this.giftCertificateDao = giftCertificateDao;
     }
 
     @Test
-    public void selectAllTest() {
-        /*GiftCertificateDaoImpl dao = new GiftCertificateDaoImpl(new JdbcTemplate(dataSource));
-        dao.create(giftCertificate);*/
-    }
-
-    /*@Test
-    public void selectByIdTest() {
-        Assertions.assertNotEquals(Optional.empty(), dao.get(4));
-        System.out.println(dao.get(4));
+    public void getAllTest() {
+        Assertions.assertNotNull(giftCertificateDao.getAll("select g_id, g_name, g_description, g_price, g_duration, g_create_date" +
+                ", g_last_update_date from gift_certificate"));
     }
 
     @Test
-    public void deleteByIdTest() {
-        dao.delete(12);
+    public void getAllByTagTest() {
+        Assertions.assertNotNull(giftCertificateDao.getAll("tagster"));
+    }
+
+    @Test
+    public void getByIdTest() {
+        Assertions.assertDoesNotThrow(() -> giftCertificateDao.get(1));
+    }
+
+    @Test
+    public void deleteByIdTest() throws NoSuchCertificateException {
+        giftCertificateDao.delete(24);
+        Assertions.assertThrows(NoSuchCertificateException.class, () -> giftCertificateDao.get(24));
     }
 
     @Test
     public void createTest() {
-        dao.create(giftCertificate);
-        System.out.println(dao.get(4));
+        Assertions.assertNotNull(giftCertificateDao.create(GIFT_CERTIFICATE));
     }
 
     @Test
     public void updateTest() {
-        dao.update(10, giftCertificate);
-    }*/
+        Assertions.assertDoesNotThrow(() -> giftCertificateDao.update(GIFT_CERTIFICATE));
+    }
 
 }

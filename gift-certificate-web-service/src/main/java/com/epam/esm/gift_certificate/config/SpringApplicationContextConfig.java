@@ -26,7 +26,7 @@ import javax.sql.DataSource;
 @EnableWebMvc
 @EnableTransactionManagement
 @PropertySource("classpath:db.properties")
-public class ContextConfig implements WebMvcConfigurer {
+public class SpringApplicationContextConfig implements WebMvcConfigurer {
 
     @Bean
     @Profile("dev")

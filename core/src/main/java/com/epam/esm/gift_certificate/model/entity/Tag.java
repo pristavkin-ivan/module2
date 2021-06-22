@@ -39,4 +39,11 @@ public final class Tag implements Entity {
         return Objects.hash(id, name);
     }
 
+    @Override
+    public String toString() {
+        return "Tag{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

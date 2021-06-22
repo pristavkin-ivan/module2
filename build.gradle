@@ -7,9 +7,9 @@ subprojects { project->
     }
 
     dependencies {
-        testCompile group: 'junit', name: 'junit', version: '4.11'
-        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
-        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+        testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+        implementation 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
         implementation 'org.springframework:spring-context:5.2.1.RELEASE'
         implementation 'org.springframework:spring-web:5.2.1.RELEASE'
         implementation 'org.springframework:spring-webmvc:5.2.1.RELEASE'

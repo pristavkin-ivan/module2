@@ -12,3 +12,4 @@ core/src/main/resources/
 gift-certificate-web-service/src/main/resources/
 gift-certificate-web-service/build/
 core/build/
+core/src/test/resources/

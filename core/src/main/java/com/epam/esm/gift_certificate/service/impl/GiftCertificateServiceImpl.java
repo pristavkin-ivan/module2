@@ -203,8 +203,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 , certificate.getPrice()
                 , certificate.getDuration()
                 , null
-                , null
-                , new ArrayList<>());
+                , null);
     }
 
     private String resolveQuery(ParamContext paramContext) {

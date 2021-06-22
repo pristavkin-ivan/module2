@@ -124,8 +124,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificat
                 , resultSet.getDouble(SqlLabels.CERTIFICATE_PRICE_COLUMN)
                 , resultSet.getInt(SqlLabels.CERTIFICATE_DURATION_COLUMN)
                 , resultSet.getTimestamp(SqlLabels.CERTIFICATE_CREATE_DATE_COLUMN)
-                , resultSet.getTimestamp(SqlLabels.CERTIFICATE_LAST_UPDATE_DATE_COLUMN)
-                , new ArrayList<>());
+                , resultSet.getTimestamp(SqlLabels.CERTIFICATE_LAST_UPDATE_DATE_COLUMN));
     }
 
     private void updateLogic(GiftCertificate modifyingGiftCertificate, GiftCertificate giftCertificate) {

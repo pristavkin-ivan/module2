@@ -1,7 +1,6 @@
 package com.epam.esm.gift_certificate.model.entity;
 
 import java.sql.Timestamp;
-import java.util.List;
 import java.util.Objects;
 
 public final class GiftCertificate implements Entity {
@@ -20,13 +19,11 @@ public final class GiftCertificate implements Entity {
 
     private Timestamp lastUpdateDate;
 
-    private List<Tag> tags;
-
     public GiftCertificate() {
     }
 
     public GiftCertificate(Integer id, String name, String description, Double price, Integer duration
-            , Timestamp createDate, Timestamp lastUpdateDate, List<Tag> tags) {
+            , Timestamp createDate, Timestamp lastUpdateDate) {
 
         this.id = id;
         this.name = name;
@@ -35,7 +32,6 @@ public final class GiftCertificate implements Entity {
         this.duration = duration;
         this.createDate = createDate;
         this.lastUpdateDate = lastUpdateDate;
-        this.tags = tags;
     }
 
     @Override
@@ -96,14 +92,6 @@ public final class GiftCertificate implements Entity {
         this.lastUpdateDate = lastUpdateDate;
     }
 
-    public List<Tag> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<Tag> tags) {
-        this.tags = tags;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -112,12 +100,12 @@ public final class GiftCertificate implements Entity {
         return Objects.equals(id, that.id) && Objects.equals(name, that.name)
                 && Objects.equals(description, that.description) && Objects.equals(price, that.price)
                 && Objects.equals(duration, that.duration) && Objects.equals(createDate, that.createDate)
-                && Objects.equals(lastUpdateDate, that.lastUpdateDate) && Objects.equals(tags, that.tags);
+                && Objects.equals(lastUpdateDate, that.lastUpdateDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, price, duration, createDate, lastUpdateDate, tags);
+        return Objects.hash(id, name, description, price, duration, createDate, lastUpdateDate);
     }
 
     @Override
@@ -130,7 +118,7 @@ public final class GiftCertificate implements Entity {
                 ", duration=" + duration +
                 ", createDate=" + createDate +
                 ", lastUpdateDate=" + lastUpdateDate +
-                ", tags=" + tags +
                 '}';
     }
+
 }
