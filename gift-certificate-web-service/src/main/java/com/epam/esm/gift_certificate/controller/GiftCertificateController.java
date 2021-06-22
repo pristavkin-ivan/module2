@@ -1,11 +1,13 @@
 package com.epam.esm.gift_certificate.controller;
 
+import com.epam.esm.gift_certificate.exception.InvalidInputException;
 import com.epam.esm.gift_certificate.exception.NoSuchTagException;
 import com.epam.esm.gift_certificate.exception.TagCreationException;
 import com.epam.esm.gift_certificate.model.dto.GiftCertificateDto;
 import com.epam.esm.gift_certificate.exception.NoSuchCertificateException;
 import com.epam.esm.gift_certificate.service.api.GiftCertificateService;
 import com.epam.esm.gift_certificate.service.impl.ParamContext;
+import com.epam.esm.gift_certificate.util.Validation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -41,7 +43,7 @@ public class GiftCertificateController {
             @RequestParam(value = "sort", required = false) String[] sortTypes
             , @RequestParam(value = "name", required = false) String name
             , @RequestParam(value = "description", required = false) String description
-            , @RequestParam(value = "tagName", required = false) String tagName) {
+            , @RequestParam(value = "tag", required = false) String tagName) throws InvalidInputException {
 
         HashMap<String, String> searchMap = new HashMap<>();
         List<String> sortTypesList = new ArrayList<>();
@@ -52,6 +54,7 @@ public class GiftCertificateController {
 
         configureSearchingMap(searchMap, name, description);
         sortTypesList = configureSortTypesList(sortTypes, sortTypesList);
+        Validation.validate(sortTypesList);
 
         return giftCertificateService.readAllGiftCertificates(new ParamContext(searchMap, sortTypesList));
     }

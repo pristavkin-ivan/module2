@@ -17,11 +17,8 @@ public class SqlQueries {
 
     static String DELETE_GIFT_CERTIFICATE = " delete from gift_certificate where g_id = ?";
 
-    static String INSERT_GIFT_CERTIFICATES = "insert into gift_certificate(g_name, g_description, g_price, g_duration" +
+    static String INSERT_GIFT_CERTIFICATE = "insert into gift_certificate(g_name, g_description, g_price, g_duration" +
             ", g_create_date, g_last_update_date) values(?,?,?,?,current_timestamp(),current_timestamp())";
-
-    static String SELECT_LAST_INSERT_CERTIFICATE = "select g_id, g_name, g_description, g_price, g_duration" +
-            ", g_create_date, g_last_update_date from gift_certificate where g_id = LAST_INSERT_ID()";
 
     static String UPDATE_GIFT_CERTIFICATE = "update gift_certificate set g_name = ?, g_description = ?, g_price = ?" +
             ", g_duration = ?, g_last_update_date = current_timestamp() where g_id = ?";
@@ -33,9 +30,6 @@ public class SqlQueries {
     static String INSERT_ASSOCIATION = "insert into gifts_tags(gift_id, tag_id) values(?, ?)";
 
     static String DELETE_ASSOCIATION = "delete from gifts_tags where gift_id = ? and tag_id = ?";
-
-    static String SELECT_ASSOCIATION_BY_TAG_ID = "select gift_id, tag_id " +
-            "from gifts_tags where tag_id = ? and gift_id = ?";
 
     /**
      * tag queries

@@ -1,6 +1,10 @@
 package com.epam.esm.gift_certificate.exception;
 
-public class NoSuchCertificateException extends Exception {
+public class NoSuchCertificateException extends NoSuchEntityException {
+
+    public NoSuchCertificateException(String message, Integer id) {
+        super(message, id);
+    }
 
     public NoSuchCertificateException() {
         super();
@@ -16,10 +20,5 @@ public class NoSuchCertificateException extends Exception {
 
     public NoSuchCertificateException(Throwable cause) {
         super(cause);
-    }
-
-    @Override
-    public String getMessage() {
-        return super.getMessage();
     }
 }

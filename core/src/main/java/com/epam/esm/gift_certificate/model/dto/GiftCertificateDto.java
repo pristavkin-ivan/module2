@@ -26,7 +26,9 @@ public class GiftCertificateDto {
     public GiftCertificateDto() {
     }
 
-    public GiftCertificateDto(Integer id, String name, String description, Double price, Integer duration, String createDate, String lastUpdateDate, List<Tag> tags) {
+    public GiftCertificateDto(Integer id, String name, String description, Double price, Integer duration
+            , String createDate, String lastUpdateDate, List<Tag> tags) {
+
         this.id = id;
         this.name = name;
         this.description = description;
@@ -106,7 +108,10 @@ public class GiftCertificateDto {
         if (this == o) return true;
         if (!(o instanceof GiftCertificateDto)) return false;
         GiftCertificateDto that = (GiftCertificateDto) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(description, that.description) && Objects.equals(price, that.price) && Objects.equals(duration, that.duration) && Objects.equals(createDate, that.createDate) && Objects.equals(lastUpdateDate, that.lastUpdateDate) && Objects.equals(tags, that.tags);
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(description
+                , that.description) && Objects.equals(price, that.price) && Objects.equals(duration, that.duration)
+                && Objects.equals(createDate, that.createDate) && Objects.equals(lastUpdateDate, that.lastUpdateDate)
+                && Objects.equals(tags, that.tags);
     }
 
     @Override

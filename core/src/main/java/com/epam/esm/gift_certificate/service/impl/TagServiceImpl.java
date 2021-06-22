@@ -26,8 +26,9 @@ public final class TagServiceImpl implements TagService {
     }
 
     @Override
+    @SuppressWarnings("all")
     public Tag read(int id) throws NoSuchTagException {
-        return tagDao.get(id).orElse(null);
+        return tagDao.get(id).get();
     }
 
     @Override
@@ -36,8 +37,9 @@ public final class TagServiceImpl implements TagService {
     }
 
     @Override
+    @SuppressWarnings("all")
     public Tag create(Tag tag) throws NoSuchTagException, TagCreationException {
-        return tagDao.create(tag).orElse(tag);
+        return tagDao.create(tag).get();
     }
 
 }

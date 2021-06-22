@@ -1,5 +1,6 @@
 package com.epam.esm.gift_certificate.controller;
 
+import com.epam.esm.gift_certificate.exception.InvalidInputException;
 import com.epam.esm.gift_certificate.exception.NoSuchCertificateException;
 import com.epam.esm.gift_certificate.exception.NoSuchTagException;
 import com.epam.esm.gift_certificate.exception.TagCreationException;
@@ -20,9 +21,12 @@ public class AppExceptionHandler {
 
     private final MessageSource messageSource;
 
+    private final static String COMMON_CODE = "00";
+
     private final static String CERTIFICATE_CODE = "01";
 
     private final static String TAG_CODE = "02";
+
     @Autowired
     public AppExceptionHandler(MessageSource messageSource) {
         this.messageSource = messageSource;
@@ -34,19 +38,37 @@ public class AppExceptionHandler {
         String errorMessage = messageSource.getMessage("noCertificate", null, "Unknown error"
                 , locale);
 
-        return new ExceptionDto(HttpStatus.NOT_FOUND.value() + CERTIFICATE_CODE, errorMessage);
+        return new ExceptionDto(HttpStatus.NOT_FOUND.value() + CERTIFICATE_CODE, errorMessage
+                + exception.getId());
+    }
+
+    @ExceptionHandler(InvalidInputException.class)
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    public ExceptionDto handleInvalidInputException(InvalidInputException exception, Locale locale) {
+        String errorMessage = messageSource.getMessage("invalidInput", null, "Unknown error"
+                , locale);
+
+        return new ExceptionDto(HttpStatus.METHOD_NOT_ALLOWED.value() + COMMON_CODE, errorMessage);
     }
 
     @ExceptionHandler(NoSuchTagException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ExceptionDto handleNoSuchTagException(NoSuchTagException exception) {
-        return new ExceptionDto(HttpStatus.NOT_FOUND.value() + TAG_CODE, exception.getMessage());
+    public ExceptionDto handleNoSuchTagException(NoSuchTagException exception, Locale locale) {
+        String errorMessage = messageSource.getMessage("noTag", null, "Unknown error"
+                , locale);
+
+        return new ExceptionDto(HttpStatus.NOT_FOUND.value() + TAG_CODE, errorMessage
+                + exception.getId());
     }
 
     @ExceptionHandler(TagCreationException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ExceptionDto handleTagCreationException(TagCreationException exception) {
-        return new ExceptionDto(HttpStatus.CONFLICT.value() + TAG_CODE, exception.getMessage());
+    public ExceptionDto handleTagCreationException(TagCreationException exception, Locale locale) {
+        String errorMessage = messageSource.getMessage("suchTagExists", null, "Unknown error"
+                , locale);
+
+        return new ExceptionDto(HttpStatus.CONFLICT.value() + TAG_CODE, errorMessage
+                + exception.getName());
     }
 
 }

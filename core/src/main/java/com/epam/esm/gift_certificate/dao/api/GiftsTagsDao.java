@@ -7,15 +7,15 @@ public interface GiftsTagsDao {
 
     /**
      * Saves many-to-many relationships in db
-     * @param gift_id
-     * @param tag_id
+     * @param giftId
+     * @param tagId
      */
-    void createAssociation(int gift_id, int tag_id);
+    void createAssociation(int giftId, int tagId);
 
     /**
      * Deletes many-to-many relationships in db
-     * @param gift_id
-     * @param tag_id
+     * @param giftId
+     * @param tagId
      */
-    void deleteAllAssociationsById(int gift_id, int tag_id);
+    void deleteAllAssociationsById(int giftId, int tagId);
 }

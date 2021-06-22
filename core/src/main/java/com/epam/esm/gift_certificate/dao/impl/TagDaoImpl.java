@@ -54,7 +54,7 @@ public final class TagDaoImpl implements TagDao<Tag> {
                     , id));
         } catch (IncorrectResultSizeDataAccessException exception) {
             LOGGER.info(NO_SUCH_TAG_ID + id);
-            throw new NoSuchTagException(NO_SUCH_TAG_ID + id);
+            throw new NoSuchTagException(NO_SUCH_TAG_ID, id);
         }
     }
 
@@ -64,7 +64,7 @@ public final class TagDaoImpl implements TagDao<Tag> {
             jdbcOperations.update(SqlQueries.DELETE_TAG, id);
         } catch (DataAccessException exception) {
             LOGGER.info(NO_SUCH_TAG_ID + id);
-            throw new NoSuchTagException(NO_SUCH_TAG_ID + id);
+            throw new NoSuchTagException(NO_SUCH_TAG_ID, id);
         }
     }
 
@@ -74,28 +74,28 @@ public final class TagDaoImpl implements TagDao<Tag> {
             jdbcOperations.update(SqlQueries.INSERT_TAG, tag.getName());
         } catch (DataAccessException exception) {
             LOGGER.info(SUCH_TAG_EXISTS + tag.getName());
-            throw new TagCreationException(SUCH_TAG_EXISTS + tag.getName());
+            throw new TagCreationException(SUCH_TAG_EXISTS, tag.getName());
         }
         return getTagByName(tag.getName());
     }
 
     @Override
-    public Optional<Tag> getTagByName(String name) throws NoSuchTagException {
+    public Optional<Tag> getTagByName(String tagName) throws NoSuchTagException {
         try {
             return Optional.ofNullable(jdbcOperations.queryForObject(
                     SqlQueries.SELECT_TAG_BY_NAME
                     , this::mapTag
-                    , name));
+                    , tagName));
         } catch (IncorrectResultSizeDataAccessException exception) {
-            LOGGER.info(NO_SUCH_TAG_NAME + name);
-            throw new NoSuchTagException(NO_SUCH_TAG_NAME + name);
+            LOGGER.info(NO_SUCH_TAG_NAME + tagName);
+            throw new NoSuchTagException(NO_SUCH_TAG_NAME, tagName);
         }
     }
 
     private Tag mapTag(ResultSet resultSet, int row) throws SQLException {
         return new Tag(
-                resultSet.getInt(SqlLabels.T_ID)
-                , resultSet.getString(SqlLabels.T_NAME));
+                resultSet.getInt(SqlLabels.TAG_ID_COLUMN)
+                , resultSet.getString(SqlLabels.TAG_NAME_COLUMN));
     }
 
 }

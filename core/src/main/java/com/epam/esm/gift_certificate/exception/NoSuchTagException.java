@@ -1,12 +1,20 @@
 package com.epam.esm.gift_certificate.exception;
 
-public class NoSuchTagException extends Exception {
+public class NoSuchTagException extends NoSuchEntityException {
+
+    private String name;
+
     public NoSuchTagException() {
         super();
     }
 
-    public NoSuchTagException(String message) {
+    public NoSuchTagException(String message, Integer id) {
+        super(message, id);
+    }
+
+    public NoSuchTagException(String message, String name) {
         super(message);
+        this.name = name;
     }
 
     public NoSuchTagException(String message, Throwable cause) {
@@ -17,8 +25,7 @@ public class NoSuchTagException extends Exception {
         super(cause);
     }
 
-    @Override
-    public String getMessage() {
-        return super.getMessage();
+    public String getName() {
+        return name;
     }
 }

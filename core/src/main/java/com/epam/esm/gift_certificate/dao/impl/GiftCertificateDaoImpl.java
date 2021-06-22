@@ -39,13 +39,13 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificat
         this.jdbcOperations = jdbcOperations;
     }
 
-    public List<GiftCertificate> getAll(String query, List<String> words) {
+    public List<GiftCertificate> getAll(String query, List<String> searchWords) {
         List<GiftCertificate> giftCertificates;
 
-        if (words == null || words.isEmpty()) {
+        if (searchWords == null || searchWords.isEmpty()) {
             giftCertificates = jdbcOperations.query(query, this::mapGiftCertificate);
         } else {
-            giftCertificates = jdbcOperations.query(query, this::mapGiftCertificate, words.toArray());
+            giftCertificates = jdbcOperations.query(query, this::mapGiftCertificate, searchWords.toArray());
         }
 
         if (giftCertificates.isEmpty()) {
@@ -78,7 +78,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificat
                     , id);
         } catch (IncorrectResultSizeDataAccessException exception) {
             LOGGER.info(NO_SUCH_CERTIFICATE + id);
-            throw new NoSuchCertificateException(NO_SUCH_CERTIFICATE + id);
+            throw new NoSuchCertificateException(NO_SUCH_CERTIFICATE, id);
         }
         return Optional.ofNullable(giftCertificate);
     }
@@ -90,14 +90,9 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificat
 
         updateLogic(modifyingGiftCertificate, giftCertificate);
 
-        try {
-            jdbcOperations.update(SqlQueries.UPDATE_GIFT_CERTIFICATE, modifyingGiftCertificate.getName()
-                    , modifyingGiftCertificate.getDescription(), modifyingGiftCertificate.getPrice()
-                    , modifyingGiftCertificate.getDuration(), modifyingGiftCertificate.getId());
-        } catch (DataAccessException exception) {
-            LOGGER.info(NO_SUCH_CERTIFICATE + giftCertificate.getId());
-            throw new NoSuchCertificateException(NO_SUCH_CERTIFICATE + giftCertificate.getId());
-        }
+        jdbcOperations.update(SqlQueries.UPDATE_GIFT_CERTIFICATE, modifyingGiftCertificate.getName()
+                , modifyingGiftCertificate.getDescription(), modifyingGiftCertificate.getPrice()
+                , modifyingGiftCertificate.getDuration(), modifyingGiftCertificate.getId());
     }
 
     @Override
@@ -106,7 +101,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificat
             jdbcOperations.update(SqlQueries.DELETE_GIFT_CERTIFICATE, id);
         } catch (DataAccessException exception) {
             LOGGER.info(NO_SUCH_CERTIFICATE + id);
-            throw new NoSuchCertificateException(NO_SUCH_CERTIFICATE + id);
+            throw new NoSuchCertificateException(NO_SUCH_CERTIFICATE, id);
         }
     }
 
@@ -123,13 +118,13 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificat
 
     private GiftCertificate mapGiftCertificate(ResultSet resultSet, int row) throws SQLException {
         return new GiftCertificate(
-                resultSet.getInt(SqlLabels.G_ID)
-                , resultSet.getString(SqlLabels.G_NAME)
-                , resultSet.getString(SqlLabels.G_DESCRIPTION)
-                , resultSet.getDouble(SqlLabels.G_PRICE)
-                , resultSet.getInt(SqlLabels.G_DURATION)
-                , resultSet.getTimestamp(SqlLabels.G_CREATE_DATE)
-                , resultSet.getTimestamp(SqlLabels.G_LAST_UPDATE_DATE)
+                resultSet.getInt(SqlLabels.CERTIFICATE_ID_COLUMN)
+                , resultSet.getString(SqlLabels.CERTIFICATE_NAME_COLUMN)
+                , resultSet.getString(SqlLabels.CERTIFICATE_DESCRIPTION_COLUMN)
+                , resultSet.getDouble(SqlLabels.CERTIFICATE_PRICE_COLUMN)
+                , resultSet.getInt(SqlLabels.CERTIFICATE_DURATION_COLUMN)
+                , resultSet.getTimestamp(SqlLabels.CERTIFICATE_CREATE_DATE_COLUMN)
+                , resultSet.getTimestamp(SqlLabels.CERTIFICATE_LAST_UPDATE_DATE_COLUMN)
                 , new ArrayList<>());
     }
 
@@ -154,7 +149,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificat
     private PreparedStatement createPreparedStatement(Connection connection, String name, String description
             , Double price, Integer duration) throws SQLException {
 
-        PreparedStatement ps = connection.prepareStatement(SqlQueries.INSERT_GIFT_CERTIFICATES, new String[]{"id"});
+        PreparedStatement ps = connection.prepareStatement(SqlQueries.INSERT_GIFT_CERTIFICATE, new String[]{"id"});
         ps.setString(1, name);
         ps.setString(2, description);
         ps.setDouble(3, price);

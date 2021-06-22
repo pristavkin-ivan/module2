@@ -140,6 +140,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
     }
 
+    @SuppressWarnings("all")
     private void populateTagsUpdate(int giftCertificateId, List<Tag> insertedTags)
             throws NoSuchTagException, TagCreationException {
 
@@ -178,9 +179,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return 0;
     }
 
-    private void insertAssociation(List<Tag> actualTags, Tag insertedTag, int giftCertificateId, int tag_id) {
+    private void insertAssociation(List<Tag> actualTags, Tag insertedTag, int giftCertificateId, int tagId) {
         if (actualTags.stream().noneMatch(tag -> tag.getName().equals(insertedTag.getName()))) {
-            giftsTagsDao.createAssociation(giftCertificateId, tag_id);
+            giftsTagsDao.createAssociation(giftCertificateId, tagId);
         }
     }
 
@@ -209,6 +210,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private String resolveQuery(ParamContext paramContext) {
         StringBuffer query = new StringBuffer(QueryParts.select);
 
+        paramContext.setSortTypes(paramContext.getSortTypes().stream().map(this::replaceStrings)
+                .collect(Collectors.toList()));
         searchLogic(paramContext, query);
         sortLogic(paramContext, QueryParts.orderBy, query);
 
@@ -239,6 +242,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             }
 
         }
+    }
+
+    private String replaceStrings(String sortType) {
+        String replaceName;
+
+        replaceName = sortType.replace("name", "g_name");
+        return replaceName.replace("date", "g_create_date");
     }
 
 }

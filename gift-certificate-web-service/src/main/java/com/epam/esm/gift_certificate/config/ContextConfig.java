@@ -32,6 +32,7 @@ public class ContextConfig implements WebMvcConfigurer {
     @Profile("dev")
     public DataSource hikariDataSource(@Value("${url}") String url
             , @Value("${user}") String user, @Value("${password}") String password) {
+
         HikariConfig hikariConfig = new HikariConfig();
 
         hikariConfig.setJdbcUrl(url);
@@ -48,6 +49,7 @@ public class ContextConfig implements WebMvcConfigurer {
             , @Value("${user}") String user, @Value("${password}") String password) {
 
         BasicDataSource dataSource = new BasicDataSource();
+
         dataSource.setUrl(url);
         dataSource.setUsername(user);
         dataSource.setPassword(password);
@@ -59,6 +61,7 @@ public class ContextConfig implements WebMvcConfigurer {
     @Bean
     public MessageSource messageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+
         messageSource.setBasenames("errorMessages");
         messageSource.setDefaultEncoding("UTF-8");
         messageSource.setUseCodeAsDefaultMessage(true);
@@ -74,6 +77,5 @@ public class ContextConfig implements WebMvcConfigurer {
     public TransactionManager transactionManager(DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
     }
-
 
 }

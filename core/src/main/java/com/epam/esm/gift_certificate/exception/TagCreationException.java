@@ -2,11 +2,14 @@ package com.epam.esm.gift_certificate.exception;
 
 public class TagCreationException extends Exception {
 
+    private String name;
+
     public TagCreationException() {
     }
 
-    public TagCreationException(String message) {
+    public TagCreationException(String message, String name) {
         super(message);
+        this.name = name;
     }
 
     public TagCreationException(String message, Throwable cause) {
@@ -17,8 +20,7 @@ public class TagCreationException extends Exception {
         super(cause);
     }
 
-    @Override
-    public String getMessage() {
-        return super.getMessage();
+    public String getName() {
+        return name;
     }
 }

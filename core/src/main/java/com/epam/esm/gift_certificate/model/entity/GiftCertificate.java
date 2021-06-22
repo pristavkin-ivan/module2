@@ -1,7 +1,6 @@
 package com.epam.esm.gift_certificate.model.entity;
 
 import java.sql.Timestamp;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,7 +25,9 @@ public final class GiftCertificate implements Entity {
     public GiftCertificate() {
     }
 
-    public GiftCertificate(Integer id, String name, String description, Double price, Integer duration, Timestamp createDate, Timestamp lastUpdateDate, List<Tag> tags) {
+    public GiftCertificate(Integer id, String name, String description, Double price, Integer duration
+            , Timestamp createDate, Timestamp lastUpdateDate, List<Tag> tags) {
+
         this.id = id;
         this.name = name;
         this.description = description;
@@ -108,7 +109,10 @@ public final class GiftCertificate implements Entity {
         if (this == o) return true;
         if (!(o instanceof GiftCertificate)) return false;
         GiftCertificate that = (GiftCertificate) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(description, that.description) && Objects.equals(price, that.price) && Objects.equals(duration, that.duration) && Objects.equals(createDate, that.createDate) && Objects.equals(lastUpdateDate, that.lastUpdateDate) && Objects.equals(tags, that.tags);
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name)
+                && Objects.equals(description, that.description) && Objects.equals(price, that.price)
+                && Objects.equals(duration, that.duration) && Objects.equals(createDate, that.createDate)
+                && Objects.equals(lastUpdateDate, that.lastUpdateDate) && Objects.equals(tags, that.tags);
     }
 
     @Override
