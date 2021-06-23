@@ -7,10 +7,11 @@ import com.epam.esm.gift_certificate.model.entity.Tag;
 import com.epam.esm.gift_certificate.service.api.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Component
+@Service
 public final class TagServiceImpl implements TagService {
 
     private final TagDao<Tag> tagDao;

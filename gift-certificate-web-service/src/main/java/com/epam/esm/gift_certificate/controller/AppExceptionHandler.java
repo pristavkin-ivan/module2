@@ -42,7 +42,7 @@ public class AppExceptionHandler {
 
     @ExceptionHandler(InvalidInputException.class)
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
-    public ExceptionDto handleInvalidInputException(InvalidInputException exception, Locale locale) {
+    public ExceptionDto handleInvalidInputException(Locale locale) {
         String errorMessage = messageSource.getMessage("invalidInput", null, "Unknown error"
                 , locale);
 

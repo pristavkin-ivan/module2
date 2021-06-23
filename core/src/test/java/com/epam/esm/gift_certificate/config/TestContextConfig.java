@@ -12,14 +12,13 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionManager;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.sql.DataSource;
 
 @Configuration
 @ComponentScan("com.epam.esm")
 @PropertySource("classpath:db.properties")
-public class TestContextConfig implements WebMvcConfigurer {
+public class TestContextConfig {
 
     @Bean
     public HikariConfig hikariConfig() {
