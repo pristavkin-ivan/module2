@@ -15,7 +15,6 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public final class TagDaoImpl implements TagDao<Tag> {
@@ -46,12 +45,12 @@ public final class TagDaoImpl implements TagDao<Tag> {
     }
 
     @Override
-    public Optional<Tag> get(int id) throws NoSuchTagException {
+    public Tag get(int id) {
         try {
-            return Optional.ofNullable(jdbcOperations.queryForObject(
+            return jdbcOperations.queryForObject(
                     SqlQueries.SELECT_TAG_BY_INDEX
                     , this::mapTag
-                    , id));
+                    , id);
         } catch (IncorrectResultSizeDataAccessException exception) {
             LOGGER.info(NO_SUCH_TAG_ID + id);
             throw new NoSuchTagException(NO_SUCH_TAG_ID, id);
@@ -69,7 +68,7 @@ public final class TagDaoImpl implements TagDao<Tag> {
     }
 
     @Override
-    public Optional<Tag> create(Tag tag) throws NoSuchTagException, TagCreationException {
+    public Tag create(Tag tag) {
         try {
             jdbcOperations.update(SqlQueries.INSERT_TAG, tag.getName());
         } catch (DataAccessException exception) {
@@ -80,12 +79,12 @@ public final class TagDaoImpl implements TagDao<Tag> {
     }
 
     @Override
-    public Optional<Tag> getTagByName(String tagName) throws NoSuchTagException {
+    public Tag getTagByName(String tagName) {
         try {
-            return Optional.ofNullable(jdbcOperations.queryForObject(
+            return jdbcOperations.queryForObject(
                     SqlQueries.SELECT_TAG_BY_NAME
                     , this::mapTag
-                    , tagName));
+                    , tagName);
         } catch (IncorrectResultSizeDataAccessException exception) {
             LOGGER.info(NO_SUCH_TAG_NAME + tagName);
             throw new NoSuchTagException(NO_SUCH_TAG_NAME, tagName);

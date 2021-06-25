@@ -1,5 +1,6 @@
 package com.epam.esm.gift_certificate.config;
 
+import com.epam.esm.gift_certificate.util.Validation;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp.BasicDataSource;
@@ -11,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionManager;
@@ -24,13 +26,13 @@ import javax.sql.DataSource;
 @ComponentScan("com.epam.esm")
 @EnableWebMvc
 @EnableTransactionManagement
-@PropertySource("classpath:db.properties")
+@PropertySource("classpath:appContext.properties")
 public class SpringApplicationContextConfig {
 
     @Bean
     @Profile("dev")
-    public DataSource hikariDataSource(@Value("${url}") String url
-            , @Value("${user}") String user, @Value("${password}") String password) {
+    public DataSource hikariDataSource(@Value("${db.url}") String url
+            , @Value("${db.user}") String user, @Value("${db.password}") String password) {
 
         HikariConfig hikariConfig = new HikariConfig();
 
@@ -44,8 +46,8 @@ public class SpringApplicationContextConfig {
 
     @Bean
     @Profile("prod")
-    public DataSource dataSource(@Value("${url}") String url
-            , @Value("${user}") String user, @Value("${password}") String password) {
+    public DataSource dataSource(@Value("${db.url}") String url
+            , @Value("${db.user}") String user, @Value("${db.password}") String password) {
 
         BasicDataSource dataSource = new BasicDataSource();
 
@@ -56,6 +58,7 @@ public class SpringApplicationContextConfig {
         dataSource.setMaxActive(30);
         return dataSource;
     }
+
 
     @Bean
     public MessageSource messageSource() {
@@ -68,13 +71,18 @@ public class SpringApplicationContextConfig {
     }
 
     @Bean
-    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
+    public JdbcOperations jdbcTemplate(DataSource dataSource) {
         return new JdbcTemplate(dataSource);
     }
 
     @Bean
     public TransactionManager transactionManager(DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
+    }
+
+    @Bean
+    public Validation validation(@Value("${availableSortTypes}") String availableSortTypes) {
+        return new Validation(availableSortTypes);
     }
 
 }

@@ -10,15 +10,4 @@ public class NoSuchCertificateException extends NoSuchEntityException {
         super();
     }
 
-    public NoSuchCertificateException(String message) {
-        super(message);
-    }
-
-    public NoSuchCertificateException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public NoSuchCertificateException(Throwable cause) {
-        super(cause);
-    }
 }

@@ -17,14 +17,6 @@ public class NoSuchTagException extends NoSuchEntityException {
         this.name = name;
     }
 
-    public NoSuchTagException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public NoSuchTagException(Throwable cause) {
-        super(cause);
-    }
-
     public String getName() {
         return name;
     }

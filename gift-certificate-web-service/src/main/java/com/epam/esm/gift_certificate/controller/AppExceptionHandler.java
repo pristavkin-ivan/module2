@@ -1,6 +1,6 @@
 package com.epam.esm.gift_certificate.controller;
 
-import com.epam.esm.gift_certificate.exception.InvalidInputException;
+import com.epam.esm.gift_certificate.exception.SortTypeIsNotAllowedException;
 import com.epam.esm.gift_certificate.exception.NoSuchCertificateException;
 import com.epam.esm.gift_certificate.exception.NoSuchTagException;
 import com.epam.esm.gift_certificate.exception.TagCreationException;
@@ -21,6 +21,8 @@ public class AppExceptionHandler {
 
     private final static String COMMON_CODE = "00";
 
+    private final static String SORT_CODE = "03";
+
     private final static String CERTIFICATE_CODE = "01";
 
     private final static String TAG_CODE = "02";
@@ -40,13 +42,13 @@ public class AppExceptionHandler {
                 + exception.getId());
     }
 
-    @ExceptionHandler(InvalidInputException.class)
-    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    @ExceptionHandler(SortTypeIsNotAllowedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ExceptionDto handleInvalidInputException(Locale locale) {
-        String errorMessage = messageSource.getMessage("invalidInput", null, "Unknown error"
+        String errorMessage = messageSource.getMessage("notAllowedSort", null, "Unknown error"
                 , locale);
 
-        return new ExceptionDto(HttpStatus.METHOD_NOT_ALLOWED.value() + COMMON_CODE, errorMessage);
+        return new ExceptionDto(HttpStatus.BAD_REQUEST.value() + SORT_CODE, errorMessage);
     }
 
     @ExceptionHandler(NoSuchTagException.class)
@@ -67,6 +69,15 @@ public class AppExceptionHandler {
 
         return new ExceptionDto(HttpStatus.CONFLICT.value() + TAG_CODE, errorMessage
                 + exception.getName());
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionDto handleBadRequest(Locale locale) {
+        String errorMessage = messageSource.getMessage("badRequest", null, "Unknown error"
+                , locale);
+
+        return new ExceptionDto(HttpStatus.BAD_REQUEST.value() + COMMON_CODE, errorMessage);
     }
 
 }

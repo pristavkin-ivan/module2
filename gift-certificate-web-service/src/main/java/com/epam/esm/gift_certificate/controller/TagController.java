@@ -1,8 +1,6 @@
 package com.epam.esm.gift_certificate.controller;
 
-import com.epam.esm.gift_certificate.exception.NoSuchTagException;
-import com.epam.esm.gift_certificate.exception.TagCreationException;
-import com.epam.esm.gift_certificate.model.entity.Tag;
+import com.epam.esm.gift_certificate.model.dto.TagDto;
 import com.epam.esm.gift_certificate.service.api.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,24 +27,24 @@ public class TagController {
     }
 
     @GetMapping
-    public List<Tag> getTags() {
+    public List<TagDto> getTags() {
         return tagService.readAll();
     }
 
     @GetMapping("/{id}")
-    public Tag getTag(@PathVariable("id") int id) throws NoSuchTagException {
+    public TagDto getTag(@PathVariable("id") int id) {
         return tagService.read(id);
     }
 
-    @PostMapping()
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Tag createTag(@RequestBody Tag tag) throws NoSuchTagException, TagCreationException {
+    public TagDto createTag(@RequestBody TagDto tag) {
         return tagService.create(tag);
     }
 
-    @DeleteMapping ("/{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTag(@PathVariable("id") int id) throws NoSuchTagException {
+    public void deleteTag(@PathVariable("id") int id) {
         tagService.delete(id);
     }
 }

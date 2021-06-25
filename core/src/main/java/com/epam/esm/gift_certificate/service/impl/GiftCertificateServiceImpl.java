@@ -1,25 +1,22 @@
 package com.epam.esm.gift_certificate.service.impl;
 
+import com.epam.esm.gift_certificate.context.ParamContext;
+import com.epam.esm.gift_certificate.dao.impl.QueryParts;
 import com.epam.esm.gift_certificate.dao.api.GiftCertificateDao;
 import com.epam.esm.gift_certificate.model.dto.GiftCertificateDto;
 import com.epam.esm.gift_certificate.dao.api.GiftsTagsDao;
 import com.epam.esm.gift_certificate.dao.api.TagDao;
-import com.epam.esm.gift_certificate.exception.NoSuchTagException;
-import com.epam.esm.gift_certificate.exception.TagCreationException;
+import com.epam.esm.gift_certificate.model.dto.TagDto;
 import com.epam.esm.gift_certificate.model.entity.GiftCertificate;
 import com.epam.esm.gift_certificate.model.entity.Tag;
-import com.epam.esm.gift_certificate.exception.NoSuchCertificateException;
 import com.epam.esm.gift_certificate.service.api.GiftCertificateService;
 import com.epam.esm.gift_certificate.util.IsoDateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,10 +28,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private final GiftsTagsDao giftsTagsDao;
 
-    private final static String NAME_FIELD = "name";
-
-    private final static String DESCRIPTION_FIELD = "description";
-
     @Autowired
     public GiftCertificateServiceImpl(GiftCertificateDao<GiftCertificate> giftCertificateDao, TagDao<Tag> tagDao
             , GiftsTagsDao giftsTagsDao) {
@@ -45,58 +38,37 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public List<GiftCertificateDto> readAllGiftCertificates(ParamContext paramContext) {
-        ArrayList<String> words = null;
-        final Collection<String> searchWords = paramContext.getSearchMap().values();
-
-        if (!searchWords.isEmpty()) {
-            words = new ArrayList<>(searchWords);
-        }
-
-        final List<GiftCertificate> giftCertificates = giftCertificateDao.getAll(resolveQuery(paramContext), words);
+        final List<GiftCertificate> giftCertificates = giftCertificateDao.getAll(paramContext);
         final List<GiftCertificateDto> dtos = giftCertificates.stream().map(this::mapToDto).collect(Collectors.toList());
 
         dtos.forEach((certificate)
-                -> certificate.setTags(tagDao.getTagsByGiftCertificateId(certificate.getId())));
+                -> certificate.setTags(tagDao
+                .getTagsByGiftCertificateId(certificate.getId()).stream()
+                .map(this::convertToTagDto).collect(Collectors.toList())));
 
         return dtos;
     }
 
     @Override
-    public List<GiftCertificateDto> readAllGiftCertificatesByTag(String tag) {
-        final List<GiftCertificate> giftCertificates = giftCertificateDao.getAll(tag);
+    public GiftCertificateDto readGiftCertificate(int id) {
+        final GiftCertificate giftCertificate = giftCertificateDao.get(id);
+        GiftCertificateDto dto;
 
-        final List<GiftCertificateDto> dtos = giftCertificates.stream().map(this::mapToDto).collect(Collectors.toList());
-
-        dtos.forEach((certificate)
-                -> certificate.setTags(tagDao.getTagsByGiftCertificateId(certificate.getId())));
-
-        return dtos;
-    }
-
-    @Override
-    public GiftCertificateDto readGiftCertificate(int id) throws NoSuchCertificateException {
-        final Optional<GiftCertificate> giftCertificateOptional = giftCertificateDao.get(id);
-        GiftCertificateDto dto = null;
-
-        if (giftCertificateOptional.isPresent()) {
-            dto = mapToDto(giftCertificateOptional.get());
-            dto.setTags(tagDao.getTagsByGiftCertificateId(id));
-        }
+        dto = mapToDto(giftCertificate);
+        dto.setTags(tagDao.getTagsByGiftCertificateId(id).stream()
+                .map(this::convertToTagDto).collect(Collectors.toList()));
 
         return dto;
     }
 
     @Override
-    @SuppressWarnings("all")
     @Transactional
-    public GiftCertificateDto createGiftCertificate(GiftCertificateDto certificateDto)
-            throws NoSuchCertificateException, NoSuchTagException, TagCreationException {
-
-        final List<Tag> tags = certificateDto.getTags();
+    public GiftCertificateDto createGiftCertificate(GiftCertificateDto certificateDto) {
+        final List<TagDto> tags = certificateDto.getTags();
         final Integer newId = giftCertificateDao.create(mapToEntity(certificateDto));
 
         if (tags != null) {
-            populateTagsCreate(newId, tags);
+            populateTagsCreate(newId, tags.stream().map(this::convertToTag).collect(Collectors.toList()));
         }
 
         return readGiftCertificate(newId);
@@ -104,62 +76,61 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     @Transactional
-    public GiftCertificateDto updateGiftCertificate(GiftCertificateDto certificateDto)
-            throws NoSuchCertificateException, NoSuchTagException, TagCreationException {
+    public GiftCertificateDto updateGiftCertificate(GiftCertificateDto certificateDto) {
+        final List<TagDto> tags = certificateDto.getTags();
+        GiftCertificate modifyingGiftCertificate = giftCertificateDao.get(certificateDto.getId());
 
-        final List<Tag> tags = certificateDto.getTags();
+        updateLogic(modifyingGiftCertificate, certificateDto);
 
-        giftCertificateDao.update(mapToEntity(certificateDto));
+        giftCertificateDao.update(modifyingGiftCertificate);
 
         if (tags != null) {
-            populateTagsUpdate(certificateDto.getId(), tags);
+            populateTagsUpdate(certificateDto.getId(), tags.stream().map(this::convertToTag)
+                    .collect(Collectors.toList()));
         }
 
         return readGiftCertificate(certificateDto.getId());
     }
 
     @Override
-    public void deleteGiftCertificate(int id) throws NoSuchCertificateException {
+    public void deleteGiftCertificate(int id) {
         giftCertificateDao.delete(id);
     }
 
-    @SuppressWarnings("all")
-    private void populateTagsCreate(int giftCertificateId, List<Tag> insertedTags)
-            throws NoSuchTagException, TagCreationException {
-
+    private void populateTagsCreate(int giftCertificateId, List<Tag> insertedTags) {
         List<Tag> allTags = tagDao.getAll();
 
         for (Tag insertedTag : insertedTags) {
-            int newTagId = processNewTags(allTags, insertedTag);
+            int newTagId = createTagIfItIsNotExist(allTags, insertedTag);
 
-            if (newTagId == 0) {
-                newTagId = allTags.stream()
-                        .filter(tag -> tag.getName().equals(insertedTag.getName())).findAny().get().getId();
-            }
+            newTagId = getNewTagId(allTags, insertedTag, newTagId);
 
             giftsTagsDao.createAssociation(giftCertificateId, newTagId);
         }
     }
 
-    @SuppressWarnings("all")
-    private void populateTagsUpdate(int giftCertificateId, List<Tag> insertedTags)
-            throws NoSuchTagException, TagCreationException {
-
+    private void populateTagsUpdate(int giftCertificateId, List<Tag> insertedTags) {
         List<Tag> actualTags = tagDao.getTagsByGiftCertificateId(giftCertificateId);
         List<Tag> allTags = tagDao.getAll();
 
         for (Tag insertedTag : insertedTags) {
-            int newTagId = processNewTags(allTags, insertedTag);
+            int newTagId = createTagIfItIsNotExist(allTags, insertedTag);
 
-            if (newTagId == 0) {
-                newTagId = allTags.stream()
-                        .filter(tag -> tag.getName().equals(insertedTag.getName())).findAny().get().getId();
-            }
+            newTagId = getNewTagId(allTags, insertedTag, newTagId);
 
             insertAssociation(actualTags, insertedTag, giftCertificateId, newTagId);
         }
 
         processDeletingTags(giftCertificateId, insertedTags, actualTags);
+    }
+
+    @SuppressWarnings("all")
+    private int getNewTagId(List<Tag> allTags, Tag insertedTag, int newTagId) {
+        if (newTagId == 0) {
+            newTagId = allTags.stream()
+                    .filter(tag -> tag.getName().equals(insertedTag.getName())).findAny().get().getId();
+        }
+        return newTagId;
     }
 
     private void processDeletingTags(int giftCertificateId, List<Tag> insertedTags, List<Tag> actualTags) {
@@ -173,9 +144,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
     }
 
-    private int processNewTags(List<Tag> allTags, Tag insertedTag) throws NoSuchTagException, TagCreationException {
+    private int createTagIfItIsNotExist(List<Tag> allTags, Tag insertedTag) {
         if (allTags.stream().noneMatch(tag -> tag.getName().equals(insertedTag.getName()))) {
-            return tagDao.create(insertedTag).orElse(insertedTag).getId();
+            return tagDao.create(insertedTag).getId();
         }
         return 0;
     }
@@ -207,48 +178,30 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 , null);
     }
 
-    private String resolveQuery(ParamContext paramContext) {
-        StringBuffer query = new StringBuffer(QueryParts.select);
+    private void updateLogic(GiftCertificate modifyingGiftCertificate, GiftCertificateDto giftCertificate) {
+        if (giftCertificate.getName() != null) {
+            modifyingGiftCertificate.setName(giftCertificate.getName());
+        }
 
-        paramContext.setSortTypes(paramContext.getSortTypes().stream().map(this::replaceStrings)
-                .collect(Collectors.toList()));
-        searchLogic(paramContext, query);
-        sortLogic(paramContext, QueryParts.orderBy, query);
+        if (giftCertificate.getDescription() != null) {
+            modifyingGiftCertificate.setDescription(giftCertificate.getDescription());
+        }
 
-        return query.toString();
-    }
+        if (giftCertificate.getPrice() != null) {
+            modifyingGiftCertificate.setPrice(giftCertificate.getPrice());
+        }
 
-    private void sortLogic(ParamContext paramContext, String orderBy, StringBuffer query) {
-        if (!paramContext.getSortTypes().isEmpty()) {
-            query.append(orderBy).append(paramContext.getSortTypes().get(0));
-            paramContext.getSortTypes().stream().skip(1).forEach((sortType) -> query.append(", ").append(sortType));
+        if (giftCertificate.getDuration() != null) {
+            modifyingGiftCertificate.setDuration(giftCertificate.getDuration());
         }
     }
 
-    private void searchLogic(ParamContext paramContext, StringBuffer query) {
-
-        if (!paramContext.getSearchMap().isEmpty()) {
-            query.append(QueryParts.where);
-
-            if (paramContext.getSearchMap().get(NAME_FIELD) != null) {
-                query.append(QueryParts.locateName);
-            }
-
-            if (paramContext.getSearchMap().get(DESCRIPTION_FIELD) != null) {
-                if (paramContext.getSearchMap().size() > 1) {
-                    query.append(QueryParts.and);
-                }
-                query.append(QueryParts.locateDescription);
-            }
-
-        }
+    private TagDto convertToTagDto(Tag tag) {
+        return new TagDto(tag.getId(), tag.getName());
     }
 
-    private String replaceStrings(String sortType) {
-        String replaceName;
-
-        replaceName = sortType.replace("name", "g_name");
-        return replaceName.replace("date", "g_create_date");
+    private Tag convertToTag(TagDto tag) {
+        return new Tag(tag.getId(), tag.getName());
     }
 
 }

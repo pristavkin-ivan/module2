@@ -1,19 +1,22 @@
 package com.epam.esm.gift_certificate.util;
 
-import com.epam.esm.gift_certificate.exception.InvalidInputException;
+import com.epam.esm.gift_certificate.exception.SortTypeIsNotAllowedException;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class Validation {
 
-    private final static List<String> AVAILABLE_SORT_TYPES
-            = Arrays.asList("name asc", "name desc", "date asc", "date desc");
+    private final List<String> availableSortTypesArray;
 
-    public static void validate(List<String> sortTypesList) throws InvalidInputException {
+    public Validation(String availableSortTypes) {
+        availableSortTypesArray = Arrays.asList(availableSortTypes.split(","));
+    }
+
+    public void validate(List<String> sortTypesList) throws SortTypeIsNotAllowedException {
         for (String sortType : sortTypesList) {
-            if (AVAILABLE_SORT_TYPES.stream().noneMatch(sort -> sort.equalsIgnoreCase(sortType))) {
-                throw new InvalidInputException("invalid input");
+            if (availableSortTypesArray.stream().noneMatch(sort -> sort.equalsIgnoreCase(sortType))) {
+                throw new SortTypeIsNotAllowedException("Not allowed sort type");
             }
         }
     }

@@ -2,9 +2,9 @@ package com.epam.esm.gift_certificate.dao.api;
 
 import com.epam.esm.gift_certificate.exception.NoSuchCertificateException;
 import com.epam.esm.gift_certificate.model.entity.GiftCertificate;
+import com.epam.esm.gift_certificate.context.ParamContext;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Dao for operating with Gift certificates database
@@ -15,33 +15,24 @@ public interface GiftCertificateDao<T extends GiftCertificate> {
 
     /**
      * Retrieves list of GiftCertificates from database
-     * @param query sql query
-     * @param words list of searching words
+     * @param paramContext
      * @return List of GiftCertificates
      */
-    List<T> getAll(String query, List<String> words);
-
-    /**
-     * Retrieves list of GiftCertificates from database
-     * @param tag searching tag
-     * @return List of GiftCertificates
-     */
-    List<T> getAll(String tag);
+    List<T> getAll(ParamContext paramContext);
 
     /**
      * Retrieves GiftCertificate by id from database
      * @param id
-     * @return Optional of GiftCertificate
+     * @return GiftCertificate
      * @throws NoSuchCertificateException if gift certificate is not exist
      */
-    Optional<T> get(int id) throws NoSuchCertificateException;
+     T get(int id) throws NoSuchCertificateException;
 
     /**
      * Deletes GiftCertificate by id from database
      * @param id
-     * @throws NoSuchCertificateException if gift certificate is not exist
      */
-    void delete(int id) throws NoSuchCertificateException;
+    void delete(int id);
 
     /**
      * Saves GiftCertificate in database

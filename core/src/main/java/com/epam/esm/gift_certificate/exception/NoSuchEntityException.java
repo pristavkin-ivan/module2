@@ -1,6 +1,6 @@
 package com.epam.esm.gift_certificate.exception;
 
-public class NoSuchEntityException extends Exception {
+public class NoSuchEntityException extends RuntimeException {
 
     private Integer id;
 
@@ -15,14 +15,6 @@ public class NoSuchEntityException extends Exception {
 
     public NoSuchEntityException(String message) {
         super(message);
-    }
-
-    public NoSuchEntityException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public NoSuchEntityException(Throwable cause) {
-        super(cause);
     }
 
     public Integer getId() {

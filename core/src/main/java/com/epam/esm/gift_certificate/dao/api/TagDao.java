@@ -26,7 +26,7 @@ public interface TagDao<T extends Tag> {
      * @return Optional of Tag
      * @throws NoSuchTagException if tag is not exist
      */
-    Optional<T> get(int id) throws NoSuchTagException;
+    T get(int id) throws NoSuchTagException;
 
     /**
      * Deletes tag by id from db
@@ -42,7 +42,7 @@ public interface TagDao<T extends Tag> {
      * @throws NoSuchTagException if tag is not exist
      * @throws TagCreationException if there are any problems with saving
      */
-    Optional<T> create(T entity) throws NoSuchTagException, TagCreationException;
+    T create(T entity) throws NoSuchTagException, TagCreationException;
 
     /**
      * Retrieves tag by name from db
@@ -50,7 +50,7 @@ public interface TagDao<T extends Tag> {
      * @return Optional of Tag
      * @throws NoSuchTagException
      */
-    Optional<Tag> getTagByName(String name) throws NoSuchTagException;
+    T getTagByName(String name) throws NoSuchTagException;
 
     /**
      * Retrieves list of tags from db by GiftCertificate id

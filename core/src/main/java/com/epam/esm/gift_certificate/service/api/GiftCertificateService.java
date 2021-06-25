@@ -4,7 +4,7 @@ import com.epam.esm.gift_certificate.exception.NoSuchTagException;
 import com.epam.esm.gift_certificate.exception.TagCreationException;
 import com.epam.esm.gift_certificate.exception.NoSuchCertificateException;
 import com.epam.esm.gift_certificate.model.dto.GiftCertificateDto;
-import com.epam.esm.gift_certificate.service.impl.ParamContext;
+import com.epam.esm.gift_certificate.context.ParamContext;
 
 import java.util.List;
 
@@ -20,13 +20,6 @@ public interface GiftCertificateService {
      * @return List of GiftCertificateDto
      */
     List<GiftCertificateDto> readAllGiftCertificates(ParamContext paramContext);
-
-    /**
-     * Retrieves list of GiftCertificates by tag name
-     * @param tag searching tag
-     * @return List of GiftCertificateDto
-     */
-    List<GiftCertificateDto> readAllGiftCertificatesByTag(String tag);
 
     /**
      * Retrieves GiftCertificate by id

@@ -1,12 +1,8 @@
 package com.epam.esm.gift_certificate.controller;
 
-import com.epam.esm.gift_certificate.exception.InvalidInputException;
-import com.epam.esm.gift_certificate.exception.NoSuchTagException;
-import com.epam.esm.gift_certificate.exception.TagCreationException;
 import com.epam.esm.gift_certificate.model.dto.GiftCertificateDto;
-import com.epam.esm.gift_certificate.exception.NoSuchCertificateException;
 import com.epam.esm.gift_certificate.service.api.GiftCertificateService;
-import com.epam.esm.gift_certificate.service.impl.ParamContext;
+import com.epam.esm.gift_certificate.context.ParamContext;
 import com.epam.esm.gift_certificate.util.Validation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,9 +29,12 @@ public class GiftCertificateController {
 
     private final GiftCertificateService giftCertificateService;
 
+    private final Validation validation;
+
     @Autowired
-    public GiftCertificateController(GiftCertificateService giftCertificateService) {
+    public GiftCertificateController(GiftCertificateService giftCertificateService, Validation validation) {
         this.giftCertificateService = giftCertificateService;
+        this.validation = validation;
     }
 
     @GetMapping
@@ -43,39 +42,33 @@ public class GiftCertificateController {
             @RequestParam(value = "sort", required = false) String[] sortTypes
             , @RequestParam(value = "name", required = false) String name
             , @RequestParam(value = "description", required = false) String description
-            , @RequestParam(value = "tag", required = false) String tagName) throws InvalidInputException {
+            , @RequestParam(value = "tag", required = false) String tagName) {
 
         HashMap<String, String> searchMap = new HashMap<>();
         List<String> sortTypesList = new ArrayList<>();
 
-        if (tagName != null) {
-            return giftCertificateService.readAllGiftCertificatesByTag(tagName);
-        }
-
-        configureSearchingMap(searchMap, name, description);
+        configureSearchingMap(searchMap, name, description, tagName);
         sortTypesList = configureSortTypesList(sortTypes, sortTypesList);
-        Validation.validate(sortTypesList);
+        validation.validate(sortTypesList);
 
         return giftCertificateService.readAllGiftCertificates(new ParamContext(searchMap, sortTypesList));
     }
 
     @GetMapping("/{id}")
-    public GiftCertificateDto getGiftCertificate(@PathVariable("id") int id) throws NoSuchCertificateException {
+    public GiftCertificateDto getGiftCertificate(@PathVariable("id") int id) {
         return giftCertificateService.readGiftCertificate(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public GiftCertificateDto addGiftCertificate(@RequestBody GiftCertificateDto giftCertificate)
-            throws NoSuchCertificateException, NoSuchTagException, TagCreationException {
+    public GiftCertificateDto addGiftCertificate(@RequestBody GiftCertificateDto giftCertificate) {
 
         return giftCertificateService.createGiftCertificate(giftCertificate);
     }
 
     @PutMapping("/{id}")
     public GiftCertificateDto updateNameOfGiftCertificate(@PathVariable("id") int id
-            , @RequestBody GiftCertificateDto giftCertificate)
-            throws NoSuchCertificateException, NoSuchTagException, TagCreationException {
+            , @RequestBody GiftCertificateDto giftCertificate) {
 
         giftCertificate.setId(id);
         return giftCertificateService.updateGiftCertificate(giftCertificate);
@@ -83,21 +76,24 @@ public class GiftCertificateController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteNameOfGiftCertificate(@PathVariable("id") int id) throws NoSuchCertificateException {
+    public void deleteNameOfGiftCertificate(@PathVariable("id") int id) {
         giftCertificateService.deleteGiftCertificate(id);
     }
 
-    private void configureSearchingMap(Map<String,String> searchMap, String name, String description) {
+    private void configureSearchingMap(Map<String, String> searchMap, String name, String description, String tagName) {
         if (name != null) {
             searchMap.put("name", name);
         }
         if (description != null) {
             searchMap.put("description", description);
         }
+        if (tagName != null) {
+            searchMap.put("tag", tagName);
+        }
     }
 
     private List<String> configureSortTypesList(String[] sortTypes, List<String> sortTypesList) {
-        if(sortTypes != null) {
+        if (sortTypes != null) {
             sortTypesList = Arrays.asList(sortTypes);
         }
         return sortTypesList;

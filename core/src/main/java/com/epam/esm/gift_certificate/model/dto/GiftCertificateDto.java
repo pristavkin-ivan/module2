@@ -21,13 +21,13 @@ public class GiftCertificateDto {
 
     private String lastUpdateDate;
 
-    private List<Tag> tags;
+    private List<TagDto> tags;
 
     public GiftCertificateDto() {
     }
 
     public GiftCertificateDto(Integer id, String name, String description, Double price, Integer duration
-            , String createDate, String lastUpdateDate, List<Tag> tags) {
+            , String createDate, String lastUpdateDate, List<TagDto> tags) {
 
         this.id = id;
         this.name = name;
@@ -95,11 +95,11 @@ public class GiftCertificateDto {
         this.lastUpdateDate = lastUpdateDate;
     }
 
-    public List<Tag> getTags() {
+    public List<TagDto> getTags() {
         return tags;
     }
 
-    public void setTags(List<Tag> tags) {
+    public void setTags(List<TagDto> tags) {
         this.tags = tags;
     }
 

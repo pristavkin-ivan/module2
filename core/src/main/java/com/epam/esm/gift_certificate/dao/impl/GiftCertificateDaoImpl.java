@@ -4,10 +4,10 @@ import com.epam.esm.gift_certificate.dao.api.GiftCertificateDao;
 import com.epam.esm.gift_certificate.model.entity.GiftCertificate;
 
 import com.epam.esm.gift_certificate.exception.NoSuchCertificateException;
+import com.epam.esm.gift_certificate.context.ParamContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -19,10 +19,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificate> {
@@ -33,41 +34,26 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificat
 
     private final static String NO_SUCH_CERTIFICATE = "No such gift-certificate! id: ";
 
+    private final static String NAME_FIELD = "name";
+
+    private final static String DESCRIPTION_FIELD = "description";
+
+    private final static String TAG_FIELD = "tag";
+
     @Autowired
     public GiftCertificateDaoImpl(JdbcOperations jdbcOperations) {
         this.jdbcOperations = jdbcOperations;
     }
 
-    public List<GiftCertificate> getAll(String query, List<String> searchWords) {
-        List<GiftCertificate> giftCertificates;
+    @Override
+    public List<GiftCertificate> getAll(ParamContext paramContext) {
+        final String query = resolveQuery(paramContext);
 
-        if (searchWords == null || searchWords.isEmpty()) {
-            giftCertificates = jdbcOperations.query(query, this::mapGiftCertificate);
-        } else {
-            giftCertificates = jdbcOperations.query(query, this::mapGiftCertificate, searchWords.toArray());
-        }
-
-        if (giftCertificates.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        return giftCertificates;
+        return getCertificates(paramContext, query);
     }
 
     @Override
-    public List<GiftCertificate> getAll(String tag) {
-        final List<GiftCertificate> giftCertificates = jdbcOperations
-                .query(SqlQueries.SELECT_ALL_GIFT_CERTIFICATES_BY_TAG, this::mapGiftCertificate, tag);
-
-        if (giftCertificates.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        return giftCertificates;
-    }
-
-    @Override
-    public Optional<GiftCertificate> get(int id) throws NoSuchCertificateException {
+    public GiftCertificate get(int id) {
         GiftCertificate giftCertificate;
 
         try {
@@ -79,29 +65,19 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificat
             LOGGER.info(NO_SUCH_CERTIFICATE + id);
             throw new NoSuchCertificateException(NO_SUCH_CERTIFICATE, id);
         }
-        return Optional.ofNullable(giftCertificate);
-    }
-
-    @SuppressWarnings("all")
-    @Override
-    public void update(GiftCertificate giftCertificate) throws NoSuchCertificateException {
-        GiftCertificate modifyingGiftCertificate = get(giftCertificate.getId()).get();
-
-        updateLogic(modifyingGiftCertificate, giftCertificate);
-
-        jdbcOperations.update(SqlQueries.UPDATE_GIFT_CERTIFICATE, modifyingGiftCertificate.getName()
-                , modifyingGiftCertificate.getDescription(), modifyingGiftCertificate.getPrice()
-                , modifyingGiftCertificate.getDuration(), modifyingGiftCertificate.getId());
+        return giftCertificate;
     }
 
     @Override
-    public void delete(int id) throws NoSuchCertificateException {
-        try {
-            jdbcOperations.update(SqlQueries.DELETE_GIFT_CERTIFICATE, id);
-        } catch (DataAccessException exception) {
-            LOGGER.info(NO_SUCH_CERTIFICATE + id);
-            throw new NoSuchCertificateException(NO_SUCH_CERTIFICATE, id);
-        }
+    public void update(GiftCertificate giftCertificate) {
+        jdbcOperations.update(SqlQueries.UPDATE_GIFT_CERTIFICATE, giftCertificate.getName()
+                , giftCertificate.getDescription(), giftCertificate.getPrice()
+                , giftCertificate.getDuration(), giftCertificate.getId());
+    }
+
+    @Override
+    public void delete(int id) {
+        jdbcOperations.update(SqlQueries.DELETE_GIFT_CERTIFICATE, id);
     }
 
     @Override
@@ -126,24 +102,6 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificat
                 , resultSet.getTimestamp(SqlLabels.CERTIFICATE_LAST_UPDATE_DATE_COLUMN));
     }
 
-    private void updateLogic(GiftCertificate modifyingGiftCertificate, GiftCertificate giftCertificate) {
-        if (giftCertificate.getName() != null) {
-            modifyingGiftCertificate.setName(giftCertificate.getName());
-        }
-
-        if (giftCertificate.getDescription() != null) {
-            modifyingGiftCertificate.setDescription(giftCertificate.getDescription());
-        }
-
-        if (giftCertificate.getPrice() != null) {
-            modifyingGiftCertificate.setPrice(giftCertificate.getPrice());
-        }
-
-        if (giftCertificate.getDuration() != null) {
-            modifyingGiftCertificate.setDuration(giftCertificate.getDuration());
-        }
-    }
-
     private PreparedStatement createPreparedStatement(Connection connection, String name, String description
             , Double price, Integer duration) throws SQLException {
 
@@ -153,6 +111,84 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao<GiftCertificat
         ps.setDouble(3, price);
         ps.setInt(4, duration);
         return ps;
+    }
+
+    private List<GiftCertificate> getCertificates(ParamContext paramContext, String query) {
+        ArrayList<String> searchWords = null;
+
+        List<GiftCertificate> giftCertificates;
+
+        if (!paramContext.getSearchMap().values().isEmpty()) {
+            searchWords = new ArrayList<>(paramContext.getSearchMap().values());
+        }
+
+        giftCertificates = chooseQuery(query, searchWords);
+
+        return giftCertificates;
+    }
+
+    private List<GiftCertificate> chooseQuery(String query, ArrayList<String> searchWords) {
+        List<GiftCertificate> giftCertificates;
+        if (searchWords == null || searchWords.isEmpty()) {
+            giftCertificates = jdbcOperations.query(query, this::mapGiftCertificate);
+        } else {
+            giftCertificates = jdbcOperations.query(query, this::mapGiftCertificate, searchWords.toArray());
+        }
+        return giftCertificates;
+    }
+
+    private String resolveQuery(ParamContext paramContext) {
+        StringBuffer query = new StringBuffer(QueryParts.select);
+
+        paramContext.setSortTypes(paramContext.getSortTypes().stream().map(this::replaceStrings)
+                .collect(Collectors.toList()));
+        searchLogic(paramContext, query);
+        sortLogic(paramContext, QueryParts.orderBy, query);
+
+        return query.toString();
+    }
+
+    private void sortLogic(ParamContext paramContext, String orderBy, StringBuffer query) {
+        if (!paramContext.getSortTypes().isEmpty()) {
+            query.append(orderBy).append(paramContext.getSortTypes().get(0));
+            paramContext.getSortTypes().stream().skip(1).forEach((sortType) -> query.append(", ").append(sortType));
+        }
+    }
+
+    private void searchLogic(ParamContext paramContext, StringBuffer query) {
+
+        if (!paramContext.getSearchMap().isEmpty()) {
+            if (paramContext.getSearchMap().get(TAG_FIELD) != null) {
+                query.append(QueryParts.join);
+            }
+            query.append(QueryParts.where);
+
+            if (paramContext.getSearchMap().get(NAME_FIELD) != null) {
+                query.append(QueryParts.locateName);
+            }
+
+            if (paramContext.getSearchMap().get(DESCRIPTION_FIELD) != null) {
+                if (paramContext.getSearchMap().size() > 1) {
+                    query.append(QueryParts.and);
+                }
+                query.append(QueryParts.locateDescription);
+            }
+
+            if (paramContext.getSearchMap().get(TAG_FIELD) != null) {
+                if (paramContext.getSearchMap().size() > 1) {
+                    query.append(QueryParts.and);
+                }
+                query.append(QueryParts.locateTag);
+            }
+
+        }
+    }
+
+    private String replaceStrings(String sortType) {
+        String replaceName;
+
+        replaceName = sortType.replace("name", "g_name");
+        return replaceName.replace("date", "g_create_date");
     }
 
 }

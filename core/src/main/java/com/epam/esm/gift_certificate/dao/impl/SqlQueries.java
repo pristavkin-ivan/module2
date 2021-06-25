@@ -6,12 +6,6 @@ public class SqlQueries {
      * Gift_certificate queries
      */
 
-    static String SELECT_ALL_GIFT_CERTIFICATES_BY_TAG = "select g_id, g_name, g_description, g_price, g_duration" +
-            ", g_create_date, g_last_update_date from gift_certificate " +
-            "join gifts_tags on g_id = gift_id " +
-            "join tag on t_id = tag_id " +
-            "where t_name = ? ";
-
     static String SELECT_GIFT_CERTIFICATE_BY_ID = "select g_id, g_name, g_description, g_price, g_duration" +
             ", g_create_date, g_last_update_date from gift_certificate where g_id = ?";
 

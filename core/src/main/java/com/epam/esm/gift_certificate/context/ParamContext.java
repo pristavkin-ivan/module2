@@ -1,4 +1,4 @@
-package com.epam.esm.gift_certificate.service.impl;
+package com.epam.esm.gift_certificate.context;
 
 import java.util.List;
 import java.util.Map;
