@@ -17,7 +17,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @ComponentScan("com.epam.esm")
-@PropertySource("classpath:db.properties")
+@PropertySource("classpath:appContext.properties")
 public class TestContextConfig {
 
     @Bean
@@ -26,8 +26,8 @@ public class TestContextConfig {
     }
 
     @Bean
-    public DataSource dataSource(@Value("${url}") String url
-            , @Value("${user}") String user, @Value("${password}") String password) {
+    public DataSource hikariDataSource(@Value("${db.url}") String url
+            , @Value("${db.user}") String user, @Value("${db.password}") String password) {
 
         BasicDataSource dataSource = new BasicDataSource();
 

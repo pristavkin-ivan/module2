@@ -27,17 +27,6 @@ public class GiftCertificateDaoImplTest {
     }
 
     @Test
-    public void getAllTest() {
-        Assertions.assertNotNull(giftCertificateDao.getAll("select g_id, g_name, g_description, g_price, g_duration, g_create_date" +
-                ", g_last_update_date from gift_certificate"));
-    }
-
-    @Test
-    public void getAllByTagTest() {
-        Assertions.assertNotNull(giftCertificateDao.getAll("tagster"));
-    }
-
-    @Test
     public void getByIdTest() {
         Assertions.assertDoesNotThrow(() -> giftCertificateDao.get(1));
     }

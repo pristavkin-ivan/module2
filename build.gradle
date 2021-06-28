@@ -24,6 +24,7 @@ subprojects { project->
         compile 'com.zaxxer:HikariCP:4.0.3'
         testCompile 'org.springframework:spring-test:5.3.3'
         implementation 'commons-dbcp:commons-dbcp:1.4'
+        testImplementation 'org.mockito:mockito-all:1.10.19'
     }
 
     test {
